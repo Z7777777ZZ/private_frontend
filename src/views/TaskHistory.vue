@@ -206,14 +206,48 @@ const handleMonitor = (task: any) => {
   router.push(`/tasks/monitor/${task.taskId}`)
 }
 
-const handleRetry = (task: any) => {
-  ElMessageBox.confirm('确定要使用相同配置重新运行此任务吗？', '确认操作', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'info'
-  }).then(() => {
-    ElMessage.success('任务已重新启动')
-  }).catch(() => {})
+const handleRetry = async (task: any) => {
+  try {
+    await ElMessageBox.confirm('确定要使用相同配置重新运行此任务吗？', '确认操作', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'info'
+    })
+    
+    // 判断任务类型并启动
+    if (!task.config) {
+      ElMessage.error('任务配置不存在，无法重新运行')
+      return
+    }
+    
+    loading.value = true
+    
+    try {
+      let result
+      // 根据配置判断是数据集任务还是单样本任务
+      if (task.config.dataset_name) {
+        // 数据集任务
+        result = await taskStore.startDatasetTask(task.config)
+      } else if (task.config.question || task.config.prompt) {
+        // 单样本任务
+        result = await taskStore.startSingleSampleTask(task.config)
+      } else {
+        ElMessage.error('无法识别任务类型')
+        return
+      }
+      
+      ElMessage.success('任务已重新启动')
+      // 跳转到监控页面
+      router.push(`/tasks/monitor/${result.task_id}`)
+    } catch (error: any) {
+      console.error('[TaskHistory] 重新运行任务失败:', error)
+      ElMessage.error(error.message || '启动任务失败')
+    } finally {
+      loading.value = false
+    }
+  } catch {
+    // 用户取消操作
+  }
 }
 
 const handleDelete = (task: any) => {

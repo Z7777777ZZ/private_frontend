@@ -22,7 +22,7 @@ const MAX_HISTORY_COUNT = 50
 export const useTaskStore = defineStore('task', () => {
   // ==================== 状态 ====================
   
-  const serverUrl = ref('http://f9.py3.io:8083')
+  const serverUrl = ref('http://10.82.1.215:8083')
   const user = ref('default')
   const currentTask = ref<TaskInfo | null>(null)
   const taskHistory = ref<TaskInfo[]>([])
