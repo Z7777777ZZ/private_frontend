@@ -96,10 +96,10 @@
               <div class="result-header">
                 <span class="result-id">{{ result.task_id }}</span>
                 <el-tag 
-                  :type="result.attack_success ? 'danger' : 'success'" 
+                  :type="(result.attack_success === 'success' || result.attack_success === true) ? 'danger' : 'success'" 
                   size="small"
                 >
-                  {{ result.attack_success ? '攻击成功' : '正常' }}
+                  {{ (result.attack_success === 'success' || result.attack_success === true) ? '攻击成功' : '正常' }}
                 </el-tag>
               </div>
               <div class="result-scores" v-if="result.scores">

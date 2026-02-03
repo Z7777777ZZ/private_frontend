@@ -233,6 +233,18 @@
               placeholder='可选：JSON 格式的测试规范'
             />
           </el-form-item>
+
+          <el-form-item label="IDE Settings">
+            <el-input 
+              v-model="ideSettingsStr" 
+              type="textarea"
+              :rows="8"
+              placeholder='可选：IDE 配置，JSON 格式'
+            />
+            <el-link type="primary" :underline="false" style="margin-top: 8px;" @click="fillDefaultIdeSettings">
+              使用推荐配置
+            </el-link>
+          </el-form-item>
         </template>
 
         <!-- 提交按钮 -->
@@ -307,6 +319,7 @@ const filterDictStr = ref('{"id": ["ipi_dl_cl_001"]}')
 const mcpConfigStr = ref('')
 const metadataStr = ref('{}')
 const testSpecStr = ref('{}')
+const ideSettingsStr = ref('')
 
 const previewConfig = computed(() => {
   const config: any = {
@@ -339,6 +352,13 @@ const previewConfig = computed(() => {
     } catch {
       config.mcp_server_config = null
     }
+    try {
+      if (ideSettingsStr.value) {
+        config.ide_settings = JSON.parse(ideSettingsStr.value)
+      }
+    } catch {
+      config.ide_settings = null
+    }
   }
 
   return JSON.stringify(config, null, 2)
@@ -355,6 +375,27 @@ const addFileAttack = () => {
 
 const removeFileAttack = (index: number) => {
   formData.value.file_attacks.splice(index, 1)
+}
+
+/**
+ * 填充默认的 IDE Settings 推荐配置
+ */
+const fillDefaultIdeSettings = () => {
+  const defaultSettings = {
+    "remote.SSH.remotePlatform": {
+      "docker-container": "linux"
+    },
+    "github.copilot.nextEditSuggestions.enabled": true,
+    "github.copilot.chat.byok.ollamaEndpoint": "http://192.168.244.1:11434",
+    "extensions.autoCheckUpdates": false,
+    "extensions.autoUpdate": false,
+    "update.enableWindowsBackgroundUpdates": false,
+    "update.mode": "none",
+    "update.showReleaseNotes": false,
+    "extensions.ignoreRecommendations": true
+  }
+  ideSettingsStr.value = JSON.stringify(defaultSettings, null, 2)
+  ElMessage.success('已填充推荐的 IDE Settings')
 }
 
 /**
@@ -401,8 +442,11 @@ const validateForm = (): boolean => {
       if (mcpConfigStr.value) {
         JSON.parse(mcpConfigStr.value)
       }
+      if (ideSettingsStr.value) {
+        JSON.parse(ideSettingsStr.value)
+      }
     } catch {
-      ElMessage.warning('JSON 格式错误，请检查 Metadata、Test Spec 或 MCP 配置')
+      ElMessage.warning('JSON 格式错误，请检查 Metadata、Test Spec、MCP 配置或 IDE Settings')
       return false
     }
   }
@@ -430,7 +474,7 @@ const buildDatasetPayload = (): DatasetTaskRequest => {
  * 构建单样本模式请求参数
  */
 const buildSingleSamplePayload = (): SingleSampleRequest => {
-  return {
+  const payload: SingleSampleRequest = {
     sample: {
       id: formData.value.sample.id,
       input: formData.value.sample.input,
@@ -447,6 +491,13 @@ const buildSingleSamplePayload = (): SingleSampleRequest => {
     mcp_server_config: mcpConfigStr.value ? JSON.parse(mcpConfigStr.value) : null,
     container_preparation_script: formData.value.container_preparation_script || null
   }
+  
+  // 添加 IDE settings（如果有）
+  if (ideSettingsStr.value) {
+    payload.ide_settings = JSON.parse(ideSettingsStr.value)
+  }
+  
+  return payload
 }
 
 /**

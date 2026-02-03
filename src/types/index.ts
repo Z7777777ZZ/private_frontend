@@ -58,6 +58,7 @@ export interface SingleSampleRequest {
   file_attacks?: FileAttack[]
   mcp_server_config?: Record<string, any> | null
   container_preparation_script?: string | null
+  ide_settings?: Record<string, any>
 }
 
 // ==================== 响应类型 ====================
@@ -97,7 +98,7 @@ export interface TaskResult {
   task_id: string
   sample_id?: string
   status?: string
-  attack_success?: boolean
+  attack_success?: boolean | 'success' | 'failure'  // 后端可能返回字符串或布尔值
   scores?: ScoreResult[]
   timestamp?: number
 }
