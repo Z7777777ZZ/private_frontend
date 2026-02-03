@@ -3,14 +3,14 @@
     <!-- 页面标题 -->
     <div class="page-header">
       <div>
-        <h2>任务监控</h2>
+        <h2>{{ t('taskMonitor.title') }}</h2>
         <p class="task-id">{{ taskId }}</p>
       </div>
       <div class="header-actions">
         <el-button type="danger" @click="handleCancel" :disabled="!isRunning">
-          取消任务
+          {{ t('taskMonitor.cancelTask') }}
         </el-button>
-        <el-button @click="handleBack">返回列表</el-button>
+        <el-button @click="handleBack">{{ t('taskMonitor.backToList') }}</el-button>
       </div>
     </div>
 
@@ -21,7 +21,7 @@
         <el-card class="screenshot-card">
           <template #header>
             <div class="card-header">
-              <span class="card-title">实时截图</span>
+              <span class="card-title">{{ t('taskMonitor.screenshot') }}</span>
               <span v-if="frameUpdateTime" class="update-time">{{ frameUpdateTime }}</span>
             </div>
           </template>
@@ -34,7 +34,7 @@
               :preview-src-list="[latestFrame]"
             />
             <div v-else class="empty-state">
-              <p>等待截图数据...</p>
+              <p>{{ t('taskMonitor.waitingScreenshot') }}</p>
             </div>
           </div>
         </el-card>
@@ -43,14 +43,14 @@
         <el-card class="log-card">
           <template #header>
             <div class="card-header">
-              <span class="card-title">实时日志</span>
-              <el-button size="small" @click="clearLogs">清空日志</el-button>
+              <span class="card-title">{{ t('taskMonitor.logs') }}</span>
+              <el-button size="small" @click="clearLogs">{{ t('taskMonitor.clearLogs') }}</el-button>
             </div>
           </template>
           
           <div class="log-container" ref="logContainerRef">
             <div v-if="logs.length === 0" class="log-empty">
-              等待日志输出...
+              {{ t('taskMonitor.waitingLogs') }}
             </div>
             <div v-else class="log-content">
               <div v-for="(log, index) in logs" :key="index" class="log-line">
@@ -66,21 +66,21 @@
         <!-- 任务状态 -->
         <el-card class="status-card">
           <template #header>
-            <span class="card-title">任务状态</span>
+            <span class="card-title">{{ t('taskMonitor.status') }}</span>
           </template>
           
           <el-descriptions :column="1" border size="default">
-            <el-descriptions-item label="当前状态" label-class-name="desc-label">
+            <el-descriptions-item :label="t('taskMonitor.currentStatus')" label-class-name="desc-label">
               <el-tag :type="statusTagType">{{ statusText }}</el-tag>
             </el-descriptions-item>
-            <el-descriptions-item label="开始时间" label-class-name="desc-label">
+            <el-descriptions-item :label="t('taskMonitor.startTime')" label-class-name="desc-label">
               {{ startTime }}
             </el-descriptions-item>
-            <el-descriptions-item label="运行时长" label-class-name="desc-label">
+            <el-descriptions-item :label="t('taskMonitor.duration')" label-class-name="desc-label">
               <span class="mono-text">{{ duration }}</span>
             </el-descriptions-item>
-            <el-descriptions-item label="完成数量" label-class-name="desc-label">
-              <el-tag type="info" effect="plain">{{ resultsCount }} 个样本</el-tag>
+            <el-descriptions-item :label="t('taskMonitor.completedCount')" label-class-name="desc-label">
+              <el-tag type="info" effect="plain">{{ resultsCount }} {{ t('taskMonitor.samples') }}</el-tag>
             </el-descriptions-item>
           </el-descriptions>
         </el-card>
@@ -88,7 +88,7 @@
         <!-- 评测结果 -->
         <el-card class="results-card" v-if="results.length > 0">
           <template #header>
-            <span class="card-title">评测结果</span>
+            <span class="card-title">{{ t('taskMonitor.results') }}</span>
           </template>
           
           <div class="results-list">
@@ -99,7 +99,7 @@
                   :type="(result.attack_success === 'success' || result.attack_success === true) ? 'danger' : 'success'" 
                   size="small"
                 >
-                  {{ (result.attack_success === 'success' || result.attack_success === true) ? '攻击成功' : '正常' }}
+                  {{ (result.attack_success === 'success' || result.attack_success === true) ? t('taskMonitor.attackSuccess') : t('taskMonitor.normal') }}
                 </el-tag>
               </div>
               <div class="result-scores" v-if="result.scores">
@@ -119,6 +119,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useTaskStore } from '@/stores/task'
 import { WebSocketManager } from '@/utils/websocket'
@@ -127,6 +128,7 @@ import type { TaskStatus } from '@/types'
 const route = useRoute()
 const router = useRouter()
 const taskStore = useTaskStore()
+const { t } = useI18n()
 
 const taskId = ref(route.params.taskId as string)
 const status = ref<TaskStatus>('connecting')
@@ -148,15 +150,7 @@ const isRunning = computed(() => status.value === 'running' || status.value === 
 const resultsCount = computed(() => results.value.length)
 
 const statusText = computed(() => {
-  const map: Record<string, string> = {
-    pending: '等待中',
-    connecting: '连接中',
-    running: '运行中',
-    finished: '已完成',
-    error: '错误',
-    cancelled: '已取消'
-  }
-  return map[status.value] || '未知'
+  return t(`taskMonitor.statusMap.${status.value}` as any) || t('taskMonitor.statusMap.unknown')
 })
 
 const statusTagType = computed(() => {
@@ -216,7 +210,7 @@ const connectWebSocket = () => {
   const wsUrl = `${taskStore.wsBaseUrl}/${taskId.value}`
   console.log('[TaskMonitor] 连接 WebSocket:', wsUrl)
   
-  addLog('正在连接到任务服务器...')
+  addLog(t('taskMonitor.logMessages.connecting'))
   
   wsManager = new WebSocketManager(wsUrl)
   
@@ -224,7 +218,7 @@ const connectWebSocket = () => {
   wsManager.on('connected', () => {
     console.log('[TaskMonitor] WebSocket 连接成功')
     status.value = 'running'
-    addLog('✓ 已连接到任务服务器')
+    addLog(t('taskMonitor.logMessages.connected'))
   })
   
   // 接收截图
@@ -245,7 +239,7 @@ const connectWebSocket = () => {
   wsManager.on('result', (result: any) => {
     console.log('[TaskMonitor] 收到结果:', result)
     results.value.push(result)
-    addLog(`✓ 收到评测结果: ${result.task_id || 'task'}`)
+    addLog(`${t('taskMonitor.logMessages.receivedResult')}: ${result.task_id || 'task'}`)
   })
   
   // 任务完成
@@ -253,21 +247,21 @@ const connectWebSocket = () => {
     console.log('[TaskMonitor] 任务完成:', data)
     status.value = 'finished'
     taskStore.updateTaskStatus(taskId.value, 'finished')
-    addLog('✓ 任务执行完成')
-    ElMessage.success(data.message || '任务已完成')
+    addLog(t('taskMonitor.logMessages.taskComplete'))
+    ElMessage.success(data.message || t('taskMonitor.messages.taskComplete'))
   })
   
   // 连接错误
   wsManager.on('error', (error: any) => {
     console.error('[TaskMonitor] WebSocket 错误:', error)
-    addLog('✗ 连接出现错误')
+    addLog(t('taskMonitor.logMessages.error'))
   })
   
   // 连接断开
   wsManager.on('disconnected', () => {
     console.log('[TaskMonitor] WebSocket 断开连接')
     if (status.value === 'running') {
-      addLog('⚠ 连接已断开，正在尝试重连...')
+      addLog(t('taskMonitor.logMessages.disconnected'))
     }
   })
   
@@ -276,8 +270,8 @@ const connectWebSocket = () => {
     console.error('[TaskMonitor] WebSocket 连接失败:', error)
     status.value = 'error'
     taskStore.updateTaskStatus(taskId.value, 'error')
-    addLog('✗ 连接失败，请检查网络或服务器状态')
-    ElMessage.error('连接失败，无法监控任务')
+    addLog(t('taskMonitor.logMessages.failed'))
+    ElMessage.error(t('taskMonitor.messages.connectFailed'))
   })
 }
 
@@ -288,26 +282,26 @@ const connectWebSocket = () => {
  */
 const handleCancel = async () => {
   try {
-    await ElMessageBox.confirm('确定要取消当前任务吗？', '确认操作', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
+    await ElMessageBox.confirm(t('taskMonitor.confirmCancel'), t('taskMonitor.confirm'), {
+      confirmButtonText: t('taskMonitor.confirm'),
+      cancelButtonText: t('taskMonitor.cancel'),
       type: 'warning'
     })
     
-    addLog('正在取消任务...')
+    addLog(t('taskMonitor.logMessages.taskCanceling'))
     
     // 调用 API 取消任务
     await taskStore.cancelTask(taskId.value)
     
     status.value = 'cancelled'
-    addLog('✓ 任务已取消')
-    ElMessage.success('任务已取消')
+    addLog(t('taskMonitor.logMessages.taskCanceled'))
+    ElMessage.success(t('taskMonitor.messages.taskCancelSuccess'))
     
   } catch (error: any) {
     if (error !== 'cancel') { // 不是用户点击取消
       console.error('[TaskMonitor] 取消任务失败:', error)
-      addLog('✗ 取消任务失败')
-      ElMessage.error(error.message || '取消任务失败')
+      addLog(t('taskMonitor.logMessages.cancelFailed'))
+      ElMessage.error(error.message || t('taskMonitor.cancelFailed'))
     }
   }
 }
@@ -324,7 +318,7 @@ const handleBack = () => {
  */
 const clearLogs = () => {
   logs.value = []
-  ElMessage.info('日志已清空')
+  ElMessage.info(t('taskMonitor.logCleared'))
 }
 
 // ==================== 生命周期 ====================

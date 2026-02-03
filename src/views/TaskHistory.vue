@@ -3,11 +3,11 @@
     <!-- 页面标题 -->
     <div class="page-header">
       <div>
-        <h2>历史任务</h2>
-        <p>查看和管理过往的评测任务</p>
+        <h2>{{ t('taskHistory.title') }}</h2>
+        <p>{{ t('taskHistory.subtitle') }}</p>
       </div>
       <el-button type="primary" @click="handleNewTask" size="large">
-        创建新任务
+        {{ t('taskHistory.createNewTask') }}
       </el-button>
     </div>
 
@@ -20,17 +20,17 @@
         v-loading="loading"
         :header-cell-style="{ background: '#fafafa', color: '#606266', fontWeight: '500' }"
       >
-        <el-table-column type="index" label="#" width="60" />
+        <el-table-column type="index" :label="t('taskHistory.index')" width="60" />
         
-        <el-table-column prop="taskId" label="任务 ID" min-width="220">
+        <el-table-column prop="taskId" :label="t('taskHistory.taskId')" min-width="220">
           <template #default="{ row }">
             <span class="task-id">{{ row.taskId }}</span>
           </template>
         </el-table-column>
         
-        <el-table-column prop="startTime" label="创建时间" width="180" />
+        <el-table-column prop="startTime" :label="t('taskHistory.createTime')" width="180" />
         
-        <el-table-column prop="status" label="状态" width="100">
+        <el-table-column prop="status" :label="t('taskHistory.status')" width="100">
           <template #default="{ row }">
             <el-tag :type="getStatusType(row.status)">
               {{ getStatusText(row.status) }}
@@ -38,14 +38,14 @@
           </template>
         </el-table-column>
         
-        <el-table-column prop="config.software" label="Software" width="140">
+        <el-table-column prop="config.software" :label="t('taskHistory.software')" width="140">
           <template #default="{ row }">
             <span v-if="row.config" class="table-text">{{ row.config.software }}</span>
             <span v-else class="text-muted">-</span>
           </template>
         </el-table-column>
         
-        <el-table-column prop="config.llm_name" label="模型" width="160">
+        <el-table-column prop="config.llm_name" :label="t('taskHistory.model')" width="160">
           <template #default="{ row }">
             <el-tag v-if="row.config" effect="plain" size="small">
               {{ row.config.llm_name }}
@@ -54,24 +54,24 @@
           </template>
         </el-table-column>
         
-        <el-table-column prop="config.dataset_name" label="数据集" width="160">
+        <el-table-column prop="config.dataset_name" :label="t('taskHistory.dataset')" width="160">
           <template #default="{ row }">
             <span v-if="row.config" class="table-text">{{ row.config.dataset_name }}</span>
             <span v-else class="text-muted">-</span>
           </template>
         </el-table-column>
         
-        <el-table-column label="操作" width="240" fixed="right">
+        <el-table-column :label="t('taskHistory.actions')" width="240" fixed="right">
           <template #default="{ row }">
             <el-button-group>
               <el-button size="small" @click="handleView(row)">
-                查看详情
+                {{ t('taskHistory.viewDetail') }}
               </el-button>
               <el-button size="small" type="primary" @click="handleRetry(row)">
-                重新运行
+                {{ t('taskHistory.retry') }}
               </el-button>
               <el-button size="small" type="danger" @click="handleDelete(row)">
-                删除
+                {{ t('taskHistory.delete') }}
               </el-button>
             </el-button-group>
           </template>
@@ -94,41 +94,41 @@
     <!-- 详情对话框 -->
     <el-dialog 
       v-model="detailDialogVisible" 
-      title="任务详情" 
+      :title="t('taskHistory.taskDetail')" 
       width="900px"
     >
       <el-descriptions :column="2" border v-if="selectedTask">
-        <el-descriptions-item label="任务 ID" :span="2">
+        <el-descriptions-item :label="t('taskHistory.taskId')" :span="2">
           <span class="task-id">{{ selectedTask.taskId }}</span>
         </el-descriptions-item>
         
-        <el-descriptions-item label="状态">
+        <el-descriptions-item :label="t('taskHistory.taskStatus')">
           <el-tag :type="getStatusType(selectedTask.status)">
             {{ getStatusText(selectedTask.status) }}
           </el-tag>
         </el-descriptions-item>
         
-        <el-descriptions-item label="创建时间">
+        <el-descriptions-item :label="t('taskHistory.createTime')">
           {{ selectedTask.startTime }}
         </el-descriptions-item>
         
-        <el-descriptions-item label="Agent 软件" v-if="selectedTask.config">
+        <el-descriptions-item :label="t('taskHistory.agentSoftware')" v-if="selectedTask.config">
           {{ selectedTask.config.software }}
         </el-descriptions-item>
         
-        <el-descriptions-item label="LLM 模型" v-if="selectedTask.config">
+        <el-descriptions-item :label="t('taskHistory.llmModel')" v-if="selectedTask.config">
           {{ selectedTask.config.llm_name }}
         </el-descriptions-item>
         
-        <el-descriptions-item label="数据集" v-if="selectedTask.config">
+        <el-descriptions-item :label="t('taskHistory.dataset')" v-if="selectedTask.config">
           {{ selectedTask.config.dataset_name }}
         </el-descriptions-item>
         
-        <el-descriptions-item label="攻击方法" v-if="selectedTask.config">
-          {{ selectedTask.config.attack_method_name || '无' }}
+        <el-descriptions-item :label="t('taskHistory.attackMethod')" v-if="selectedTask.config">
+          {{ selectedTask.config.attack_method_name || t('taskHistory.noAttack') }}
         </el-descriptions-item>
         
-        <el-descriptions-item label="完整配置" :span="2" v-if="selectedTask.config">
+        <el-descriptions-item :label="t('taskHistory.fullConfig')" :span="2" v-if="selectedTask.config">
           <el-input 
             type="textarea" 
             :value="JSON.stringify(selectedTask.config, null, 2)" 
@@ -140,9 +140,9 @@
       </el-descriptions>
       
       <template #footer>
-        <el-button @click="detailDialogVisible = false" size="large">关闭</el-button>
+        <el-button @click="detailDialogVisible = false" size="large">{{ t('taskHistory.close') }}</el-button>
         <el-button type="success" @click="handleViewReport(selectedTask)" size="large">
-          查看完整报告
+          {{ t('taskHistory.viewFullReport') }}
         </el-button>
         <el-button 
           v-if="selectedTask && selectedTask.status === 'running'" 
@@ -150,7 +150,7 @@
           @click="handleMonitor(selectedTask)" 
           size="large"
         >
-          查看实时监控
+          {{ t('taskHistory.viewMonitor') }}
         </el-button>
       </template>
     </el-dialog>
@@ -158,7 +158,7 @@
     <!-- 完整报告对话框 -->
     <el-dialog 
       v-model="reportDialogVisible" 
-      title="完整报告" 
+      :title="t('taskHistory.fullReport')" 
       width="1200px"
       :close-on-click-modal="false"
     >
@@ -172,30 +172,30 @@
         />
         
         <el-tabs v-if="fullReport" type="border-card">
-          <el-tab-pane label="基本信息">
+          <el-tab-pane :label="t('taskHistory.basicInfo')">
             <el-descriptions :column="2" border>
-              <el-descriptions-item label="Sample ID">{{ fullReport.sample_id }}</el-descriptions-item>
-              <el-descriptions-item label="状态">
+              <el-descriptions-item :label="t('taskHistory.sampleId')">{{ fullReport.sample_id }}</el-descriptions-item>
+              <el-descriptions-item :label="t('taskHistory.status')">
                 <el-tag>{{ fullReport.status }}</el-tag>
               </el-descriptions-item>
-              <el-descriptions-item label="攻击结果" :span="2">
+              <el-descriptions-item :label="t('taskHistory.attackResult')" :span="2">
                 <el-tag :type="(fullReport.result?.attack_success === 'success' || fullReport.result?.attack_success === true) ? 'danger' : 'success'">
-                  {{ (fullReport.result?.attack_success === 'success' || fullReport.result?.attack_success === true) ? '攻击成功' : '攻击失败' }}
+                  {{ (fullReport.result?.attack_success === 'success' || fullReport.result?.attack_success === true) ? t('taskHistory.attackSuccess') : t('taskHistory.attackFailed') }}
                 </el-tag>
               </el-descriptions-item>
-              <el-descriptions-item label="开始时间" v-if="fullReport.stats">
+              <el-descriptions-item :label="t('taskHistory.startTime')" v-if="fullReport.stats">
                 {{ new Date(fullReport.stats.started_at * 1000).toLocaleString() }}
               </el-descriptions-item>
-              <el-descriptions-item label="完成时间" v-if="fullReport.stats">
+              <el-descriptions-item :label="t('taskHistory.completeTime')" v-if="fullReport.stats">
                 {{ new Date(fullReport.stats.completed_at * 1000).toLocaleString() }}
               </el-descriptions-item>
-              <el-descriptions-item label="耗时" v-if="fullReport.stats">
-                {{ Math.round(fullReport.stats.duration) }} 秒
+              <el-descriptions-item :label="t('taskHistory.duration')" v-if="fullReport.stats">
+                {{ Math.round(fullReport.stats.duration) }} {{ t('taskHistory.seconds') }}
               </el-descriptions-item>
             </el-descriptions>
           </el-tab-pane>
 
-          <el-tab-pane label="评分详情" v-if="fullReport.result?.scores">
+          <el-tab-pane :label="t('taskHistory.scoreDetails')" v-if="fullReport.result?.scores">
             <el-descriptions :column="1" border>
               <el-descriptions-item v-for="(scoreList, dataset) in fullReport.result.scores" :key="dataset" :label="String(dataset)" :span="2">
                 <div v-if="Array.isArray(scoreList)">
@@ -211,12 +211,12 @@
             </el-descriptions>
           </el-tab-pane>
 
-          <el-tab-pane label="对话历史" v-if="fullReport.result?.trace">
+          <el-tab-pane :label="t('taskHistory.conversationHistory')" v-if="fullReport.result?.trace">
             <div class="trace-container">
               <div v-for="(msg, idx) in fullReport.result.trace" :key="idx" class="trace-message">
                 <div class="trace-header">
                   <el-tag :type="msg.role === 'user' ? 'primary' : 'success'" size="small">
-                    {{ msg.role === 'user' ? '用户' : 'AI' }}
+                    {{ msg.role === 'user' ? t('taskHistory.user') : t('taskHistory.ai') }}
                   </el-tag>
                   <span class="trace-index">#{{ idx + 1 }}</span>
                 </div>
@@ -225,7 +225,7 @@
             </div>
           </el-tab-pane>
 
-          <el-tab-pane label="执行命令" v-if="fullReport.result?.commands_executed">
+          <el-tab-pane :label="t('taskHistory.executedCommands')" v-if="fullReport.result?.commands_executed">
             <div class="commands-container">
               <div v-for="(cmd, idx) in fullReport.result.commands_executed" :key="idx" class="command-item">
                 <div class="command-index">#{{ idx + 1 }}</div>
@@ -234,13 +234,13 @@
             </div>
           </el-tab-pane>
 
-          <el-tab-pane label="样本信息" v-if="fullReport.sample">
+          <el-tab-pane :label="t('taskHistory.sampleInfo')" v-if="fullReport.sample">
             <el-descriptions :column="1" border>
               <el-descriptions-item label="ID">{{ fullReport.sample.id }}</el-descriptions-item>
-              <el-descriptions-item label="输入">
+              <el-descriptions-item :label="t('taskHistory.input')">
                 <pre style="white-space: pre-wrap;">{{ fullReport.sample.input }}</pre>
               </el-descriptions-item>
-              <el-descriptions-item label="元数据" v-if="fullReport.sample.metadata">
+              <el-descriptions-item :label="t('taskHistory.metadata')" v-if="fullReport.sample.metadata">
                 <el-input 
                   type="textarea" 
                   :value="JSON.stringify(fullReport.sample.metadata, null, 2)" 
@@ -251,7 +251,7 @@
             </el-descriptions>
           </el-tab-pane>
 
-          <el-tab-pane label="完整 JSON">
+          <el-tab-pane :label="t('taskHistory.fullJson')">
             <el-input 
               type="textarea" 
               :value="JSON.stringify(fullReport, null, 2)" 
@@ -264,9 +264,9 @@
       </div>
       
       <template #footer>
-        <el-button @click="reportDialogVisible = false" size="large">关闭</el-button>
+        <el-button @click="reportDialogVisible = false" size="large">{{ t('taskHistory.close') }}</el-button>
         <el-button type="primary" @click="downloadReport" size="large" :disabled="!fullReport">
-          下载报告 JSON
+          {{ t('taskHistory.downloadReport') }}
         </el-button>
       </template>
     </el-dialog>
@@ -276,11 +276,13 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useTaskStore } from '@/stores/task'
 
 const router = useRouter()
 const taskStore = useTaskStore()
+const { t } = useI18n()
 
 const loading = ref(false)
 const currentPage = ref(1)
@@ -312,13 +314,7 @@ const getStatusType = (status: string) => {
 }
 
 const getStatusText = (status: string) => {
-  const map: Record<string, string> = {
-    running: '运行中',
-    finished: '已完成',
-    error: '错误',
-    cancelled: '已取消'
-  }
-  return map[status] || '未知'
+  return t(`taskHistory.statusMap.${status}` as any) || t('taskHistory.statusMap.unknown')
 }
 
 const handleNewTask = () => {
@@ -345,7 +341,7 @@ const handleViewReport = async (task: any) => {
     fullReport.value = report
   } catch (error: any) {
     console.error('[TaskHistory] 获取报告失败:', error)
-    reportError.value = error.message || '获取报告失败，请稍后重试'
+    reportError.value = error.message || t('taskHistory.messages.reportFetchFailed')
     ElMessage.error(reportError.value)
   } finally {
     reportLoading.value = false
@@ -363,20 +359,20 @@ const downloadReport = () => {
   link.download = `report_${fullReport.value.sample_id || 'unknown'}_${Date.now()}.json`
   link.click()
   URL.revokeObjectURL(url)
-  ElMessage.success('报告已下载')
+  ElMessage.success(t('taskHistory.messages.reportDownloaded'))
 }
 
 const handleRetry = async (task: any) => {
   try {
-    await ElMessageBox.confirm('确定要使用相同配置重新运行此任务吗？', '确认操作', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
+    await ElMessageBox.confirm(t('taskHistory.confirmRetry'), t('taskHistory.confirm'), {
+      confirmButtonText: t('taskHistory.confirm'),
+      cancelButtonText: t('taskHistory.cancel'),
       type: 'info'
     })
     
     // 判断任务类型并启动
     if (!task.config) {
-      ElMessage.error('任务配置不存在，无法重新运行')
+      ElMessage.error(t('taskHistory.messages.noConfig'))
       return
     }
     
@@ -392,16 +388,16 @@ const handleRetry = async (task: any) => {
         // 单样本任务
         result = await taskStore.startSingleSampleTask(task.config)
       } else {
-        ElMessage.error('无法识别任务类型')
+        ElMessage.error(t('taskHistory.messages.unknownTaskType'))
         return
       }
       
-      ElMessage.success('任务已重新启动')
+      ElMessage.success(t('taskHistory.messages.taskStarted'))
       // 跳转到监控页面
       router.push(`/tasks/monitor/${result.task_id}`)
     } catch (error: any) {
       console.error('[TaskHistory] 重新运行任务失败:', error)
-      ElMessage.error(error.message || '启动任务失败')
+      ElMessage.error(error.message || t('taskHistory.messages.startFailed'))
     } finally {
       loading.value = false
     }
@@ -411,13 +407,13 @@ const handleRetry = async (task: any) => {
 }
 
 const handleDelete = (task: any) => {
-  ElMessageBox.confirm('确定要删除此任务记录吗？此操作不可恢复。', '警告', {
-    confirmButtonText: '确定删除',
-    cancelButtonText: '取消',
+  ElMessageBox.confirm(t('taskHistory.confirmDelete'), t('taskHistory.warning'), {
+    confirmButtonText: t('taskHistory.confirmDeleteBtn'),
+    cancelButtonText: t('taskHistory.cancel'),
     type: 'warning'
   }).then(() => {
     taskStore.removeFromHistory(task.taskId)
-    ElMessage.success('删除成功')
+    ElMessage.success(t('taskHistory.messages.deleteSuccess'))
   }).catch(() => {})
 }
 </script>

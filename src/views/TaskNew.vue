@@ -2,8 +2,8 @@
   <div class="task-new-page">
     <!-- 页面标题 -->
     <div class="page-header">
-      <h2>创建评测任务</h2>
-      <p>配置 Coding Agent 评测参数并启动任务</p>
+      <h2>{{ t('taskNew.title') }}</h2>
+      <p>{{ t('taskNew.subtitle') }}</p>
     </div>
 
     <!-- 配置表单 -->
@@ -11,20 +11,20 @@
       <el-form :model="formData" label-width="110px" label-position="left" size="default">
         
         <!-- 评测模式 -->
-        <el-form-item label="评测模式">
+        <el-form-item :label="t('taskNew.mode')">
           <el-radio-group v-model="formData.mode">
-            <el-radio value="dataset">数据集批量评测</el-radio>
-            <el-radio value="single_sample">单样本评测</el-radio>
+            <el-radio value="dataset">{{ t('taskNew.modeDataset') }}</el-radio>
+            <el-radio value="single_sample">{{ t('taskNew.modeSingle') }}</el-radio>
           </el-radio-group>
         </el-form-item>
 
-        <el-divider content-position="left">基础配置</el-divider>
+        <el-divider content-position="left">{{ t('taskNew.basicConfig') }}</el-divider>
 
         <!-- 第一行 -->
         <el-row :gutter="24">
           <el-col :span="8">
-            <el-form-item label="Agent 软件">
-              <el-select v-model="formData.software" placeholder="选择软件">
+            <el-form-item :label="t('taskNew.agentSoftware')">
+              <el-select v-model="formData.software" :placeholder="t('taskNew.selectSoftware')">
                 <el-option label="vscode_cli" value="vscode_cli" />
                 <el-option label="vscode_ide" value="vscode_ide" />
                 <el-option label="cline_ide" value="cline_ide" />
@@ -35,8 +35,8 @@
           </el-col>
 
           <el-col :span="8">
-            <el-form-item label="LLM 模型">
-              <el-select v-model="formData.llm_name" placeholder="选择模型" filterable>
+            <el-form-item :label="t('taskNew.llmModel')">
+              <el-select v-model="formData.llm_name" :placeholder="t('taskNew.selectModel')" filterable>
                 <el-option label="deepseek-chat" value="deepseek-chat" />
                 <el-option label="gemini-3-flash" value="gemini-3-flash" />
                 <el-option label="claude-sonnet-4-5" value="claude-sonnet-4-5" />
@@ -47,8 +47,8 @@
           </el-col>
 
           <el-col :span="8">
-            <el-form-item label="数据集">
-              <el-select v-model="formData.dataset_name" placeholder="选择数据集">
+            <el-form-item :label="t('taskNew.dataset')">
+              <el-select v-model="formData.dataset_name" :placeholder="t('taskNew.selectDataset')">
                 <el-option label="redcode" value="redcode" />
                 <el-option label="swebench" value="swebench" />
                 <el-option label="ipi_web_dataset" value="ipi_web_dataset" />
@@ -62,20 +62,20 @@
         <!-- 第二行 -->
         <el-row :gutter="24">
           <el-col :span="12">
-            <el-form-item label="攻击方法">
+            <el-form-item :label="t('taskNew.attackMethod')">
               <el-input 
                 v-model="formData.attack_method_name" 
-                placeholder="留空表示不使用攻击方法"
+                :placeholder="t('taskNew.attackMethodPlaceholder')"
                 clearable
               />
             </el-form-item>
           </el-col>
 
           <el-col :span="12">
-            <el-form-item label="用户名">
+            <el-form-item :label="t('taskNew.username')">
               <el-input 
                 v-model="formData.user" 
-                placeholder="默认: default"
+                :placeholder="t('taskNew.usernamePlaceholder')"
               />
             </el-form-item>
           </el-col>
@@ -83,130 +83,130 @@
 
         <!-- ========== 数据集模式专用配置 ========== -->
         <template v-if="formData.mode === 'dataset'">
-          <el-divider content-position="left">数据集配置</el-divider>
+          <el-divider content-position="left">{{ t('taskNew.datasetConfig') }}</el-divider>
           
           <el-row :gutter="24">
             <el-col :span="12">
-              <el-form-item label="跳过已完成">
+              <el-form-item :label="t('taskNew.skipCompleted')">
                 <el-switch v-model="formData.skip_completed" />
-                <span class="form-tip">关闭后会重新评测已完成的任务</span>
+                <span class="form-tip">{{ t('taskNew.skipCompletedTip') }}</span>
               </el-form-item>
             </el-col>
           </el-row>
 
-          <el-form-item label="过滤条件">
+          <el-form-item :label="t('taskNew.filterCondition')">
             <el-input 
               v-model="filterDictStr" 
               type="textarea"
               :rows="4"
-              placeholder='JSON 格式，例如: {"id": ["ipi_dl_cl_001"]}'
+              :placeholder="t('taskNew.filterPlaceholder')"
             />
             <div class="form-tip">
-              根据数据集类型使用不同的过滤条件：<br>
+              {{ t('taskNew.filterTip') }}<br>
               • redcode: {"ids": ["1"], "language": ["python"], "category": ["1", "2"]}<br>
               • ipi_web_dataset: {"id": ["ipi_dl_cl_001"]}<br>
               • cvebench: {"challenges": ["CVE-2023-37999"], "variants": ["one_day"]}
             </div>
           </el-form-item>
 
-          <el-form-item label="MCP 配置">
+          <el-form-item :label="t('taskNew.mcpConfig')">
             <el-input 
               v-model="formData.mcp_server_config" 
               type="textarea"
               :rows="3"
-              placeholder='可选：JSON 格式的 MCP 服务器配置'
+              :placeholder="t('taskNew.mcpConfigPlaceholder')"
             />
           </el-form-item>
         </template>
 
         <!-- ========== 单样本模式专用配置 ========== -->
         <template v-if="formData.mode === 'single_sample'">
-          <el-divider content-position="left">单样本配置</el-divider>
+          <el-divider content-position="left">{{ t('taskNew.singleSampleConfig') }}</el-divider>
           
           <el-row :gutter="24">
             <el-col :span="12">
-              <el-form-item label="Sample ID">
-                <el-input v-model="formData.sample.id" placeholder="例如: test-001" />
+              <el-form-item :label="t('taskNew.sampleId')">
+                <el-input v-model="formData.sample.id" :placeholder="t('taskNew.sampleIdPlaceholder')" />
               </el-form-item>
             </el-col>
           </el-row>
 
-          <el-form-item label="任务指令">
+          <el-form-item :label="t('taskNew.taskInstruction')">
             <el-input 
               v-model="formData.sample.input" 
               type="textarea"
               :rows="5"
-              placeholder="输入要让 Agent 执行的任务指令..."
+              :placeholder="t('taskNew.taskInstructionPlaceholder')"
               show-word-limit
               maxlength="2000"
             />
           </el-form-item>
 
-          <el-form-item label="预期目标">
+          <el-form-item :label="t('taskNew.expectedTarget')">
             <el-input 
               v-model="formData.sample.target" 
               type="textarea"
               :rows="3"
-              placeholder="可选：描述预期的输出结果或目标状态"
+              :placeholder="t('taskNew.expectedTargetPlaceholder')"
             />
           </el-form-item>
 
-          <el-form-item label="容器准备脚本">
+          <el-form-item :label="t('taskNew.containerScript')">
             <el-input 
               v-model="formData.container_preparation_script" 
               type="textarea"
               :rows="3"
-              placeholder="可选：容器启动后执行的 bash 脚本，例如: pip install requests"
+              :placeholder="t('taskNew.containerScriptPlaceholder')"
             />
           </el-form-item>
 
-          <el-form-item label="MCP 配置">
+          <el-form-item :label="t('taskNew.mcpConfig')">
             <el-input 
               v-model="mcpConfigStr" 
               type="textarea"
               :rows="3"
-              placeholder='可选：JSON 格式的 MCP 服务器配置'
+              :placeholder="t('taskNew.mcpConfigPlaceholder')"
             />
           </el-form-item>
 
           <!-- 文件攻击配置 -->
-          <el-divider content-position="left">文件攻击配置</el-divider>
+          <el-divider content-position="left">{{ t('taskNew.fileAttackConfig') }}</el-divider>
           
           <el-form-item>
-            <el-button @click="addFileAttack" type="primary">添加文件攻击</el-button>
+            <el-button @click="addFileAttack" type="primary">{{ t('taskNew.addFileAttack') }}</el-button>
             <span class="form-tip" style="margin-left: 12px;">
-              用于注入恶意文件到容器中进行安全测试
+              {{ t('taskNew.fileAttackTip') }}
             </span>
           </el-form-item>
           
           <div v-for="(attack, index) in formData.file_attacks" :key="index" class="file-attack-item">
             <el-card shadow="hover">
               <div class="attack-header">
-                <span class="attack-title">文件攻击 {{ index + 1 }}</span>
+                <span class="attack-title">{{ t('taskNew.fileAttack') }} {{ index + 1 }}</span>
                 <el-button size="small" type="danger" @click="removeFileAttack(index)">
-                  删除
+                  {{ t('taskNew.deleteAttack') }}
                 </el-button>
               </div>
               
               <el-row :gutter="16" style="margin-top: 12px;">
                 <el-col :span="12">
-                  <el-form-item label="名称" label-width="80px">
-                    <el-input v-model="attack.name" placeholder="攻击名称" size="small" />
+                  <el-form-item :label="t('taskNew.attackName')" label-width="80px">
+                    <el-input v-model="attack.name" :placeholder="t('taskNew.attackNamePlaceholder')" size="small" />
                   </el-form-item>
                 </el-col>
                 <el-col :span="12">
-                  <el-form-item label="容器路径" label-width="80px">
-                    <el-input v-model="attack.container_path" placeholder="/home/devuser/project/file.txt" size="small" />
+                  <el-form-item :label="t('taskNew.containerPath')" label-width="80px">
+                    <el-input v-model="attack.container_path" :placeholder="t('taskNew.containerPathPlaceholder')" size="small" />
                   </el-form-item>
                 </el-col>
               </el-row>
               
-              <el-form-item label="文件内容" label-width="80px">
+              <el-form-item :label="t('taskNew.fileContent')" label-width="80px">
                 <el-input 
                   v-model="attack.content" 
                   type="textarea" 
                   :rows="4" 
-                  placeholder="要注入的文件内容..."
+                  :placeholder="t('taskNew.fileContentPlaceholder')"
                   size="small"
                 />
               </el-form-item>
@@ -214,35 +214,35 @@
           </div>
 
           <!-- Metadata 配置 -->
-          <el-divider content-position="left">元数据配置</el-divider>
+          <el-divider content-position="left">{{ t('taskNew.metadataConfig') }}</el-divider>
           
-          <el-form-item label="Metadata">
+          <el-form-item :label="t('taskNew.metadata')">
             <el-input 
               v-model="metadataStr" 
               type="textarea"
               :rows="3"
-              placeholder='可选：JSON 格式的元数据，例如: {"custom_key": "value"}'
+              :placeholder="t('taskNew.metadataPlaceholder')"
             />
           </el-form-item>
 
-          <el-form-item label="Test Spec">
+          <el-form-item :label="t('taskNew.testSpec')">
             <el-input 
               v-model="testSpecStr" 
               type="textarea"
               :rows="3"
-              placeholder='可选：JSON 格式的测试规范'
+              :placeholder="t('taskNew.testSpecPlaceholder')"
             />
           </el-form-item>
 
-          <el-form-item label="IDE Settings">
+          <el-form-item :label="t('taskNew.ideSettings')">
             <el-input 
               v-model="ideSettingsStr" 
               type="textarea"
               :rows="8"
-              placeholder='可选：IDE 配置，JSON 格式'
+              :placeholder="t('taskNew.ideSettingsPlaceholder')"
             />
             <el-link type="primary" :underline="false" style="margin-top: 8px;" @click="fillDefaultIdeSettings">
-              使用推荐配置
+              {{ t('taskNew.useRecommended') }}
             </el-link>
           </el-form-item>
         </template>
@@ -255,10 +255,10 @@
             :loading="loading"
             size="large"
           >
-            启动评测任务
+            {{ t('taskNew.startTask') }}
           </el-button>
-          <el-button @click="handleReset" size="large">重置表单</el-button>
-          <el-button @click="handlePreview" size="large">预览配置</el-button>
+          <el-button @click="handleReset" size="large">{{ t('taskNew.resetForm') }}</el-button>
+          <el-button @click="handlePreview" size="large">{{ t('taskNew.previewConfig') }}</el-button>
         </el-form-item>
 
       </el-form>
@@ -267,7 +267,7 @@
     <!-- 配置预览对话框 -->
     <el-dialog 
       v-model="previewDialogVisible" 
-      title="配置预览" 
+      :title="t('taskNew.configPreview')" 
       width="700px"
     >
       <el-input
@@ -278,8 +278,8 @@
         class="preview-json"
       />
       <template #footer>
-        <el-button @click="previewDialogVisible = false">关闭</el-button>
-        <el-button type="primary" @click="copyConfig">复制配置</el-button>
+        <el-button @click="previewDialogVisible = false">{{ t('taskNew.close') }}</el-button>
+        <el-button type="primary" @click="copyConfig">{{ t('taskNew.copyConfig') }}</el-button>
       </template>
     </el-dialog>
   </div>
@@ -288,12 +288,14 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
 import { useTaskStore } from '@/stores/task'
 import type { DatasetTaskRequest, SingleSampleRequest } from '@/types'
 
 const router = useRouter()
 const taskStore = useTaskStore()
+const { t } = useI18n()
 const loading = ref(false)
 const previewDialogVisible = ref(false)
 
@@ -395,7 +397,7 @@ const fillDefaultIdeSettings = () => {
     "extensions.ignoreRecommendations": true
   }
   ideSettingsStr.value = JSON.stringify(defaultSettings, null, 2)
-  ElMessage.success('已填充推荐的 IDE Settings')
+  ElMessage.success(t('taskNew.messages.ideSettingsFilled'))
 }
 
 /**
@@ -403,26 +405,26 @@ const fillDefaultIdeSettings = () => {
  */
 const validateForm = (): boolean => {
   if (!formData.value.software) {
-    ElMessage.warning('请选择 Agent 软件')
+    ElMessage.warning(t('taskNew.validation.selectSoftware'))
     return false
   }
   if (!formData.value.llm_name) {
-    ElMessage.warning('请选择 LLM 模型')
+    ElMessage.warning(t('taskNew.validation.selectModel'))
     return false
   }
   if (!formData.value.dataset_name) {
-    ElMessage.warning('请选择数据集')
+    ElMessage.warning(t('taskNew.validation.selectDataset'))
     return false
   }
   
   // 单样本模式额外验证
   if (formData.value.mode === 'single_sample') {
     if (!formData.value.sample.id) {
-      ElMessage.warning('请输入 Sample ID')
+      ElMessage.warning(t('taskNew.validation.enterSampleId'))
       return false
     }
     if (!formData.value.sample.input) {
-      ElMessage.warning('请输入任务指令')
+      ElMessage.warning(t('taskNew.validation.enterInstruction'))
       return false
     }
   }
@@ -432,7 +434,7 @@ const validateForm = (): boolean => {
     try {
       JSON.parse(filterDictStr.value || '{}')
     } catch {
-      ElMessage.warning('过滤条件 JSON 格式错误')
+      ElMessage.warning(t('taskNew.validation.invalidFilterJson'))
       return false
     }
   } else {
@@ -446,7 +448,7 @@ const validateForm = (): boolean => {
         JSON.parse(ideSettingsStr.value)
       }
     } catch {
-      ElMessage.warning('JSON 格式错误，请检查 Metadata、Test Spec、MCP 配置或 IDE Settings')
+      ElMessage.warning(t('taskNew.validation.invalidJson'))
       return false
     }
   }
@@ -527,14 +529,14 @@ const handleSubmit = async () => {
     }
     
     // 成功提示
-    ElMessage.success('任务启动成功！')
+    ElMessage.success(t('taskNew.messages.taskStarted'))
     
     // 跳转到监控页面
     router.push(`/tasks/monitor/${result.task_id}`)
     
   } catch (error: any) {
     console.error('[TaskNew] 启动任务失败:', error)
-    ElMessage.error(error.message || '启动任务失败，请检查网络连接或服务器状态')
+    ElMessage.error(error.message || t('taskNew.messages.taskStartFailed'))
   } finally {
     loading.value = false
   }
@@ -562,7 +564,7 @@ const handleReset = () => {
   mcpConfigStr.value = ''
   metadataStr.value = '{}'
   testSpecStr.value = '{}'
-  ElMessage.info('表单已重置')
+  ElMessage.info(t('taskNew.messages.formReset'))
 }
 
 const handlePreview = () => {
@@ -571,7 +573,7 @@ const handlePreview = () => {
 
 const copyConfig = () => {
   navigator.clipboard.writeText(previewConfig.value)
-  ElMessage.success('配置已复制到剪贴板')
+  ElMessage.success(t('taskNew.messages.configCopied'))
 }
 </script>
 

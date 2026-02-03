@@ -3,7 +3,7 @@
     <!-- 左侧侧边栏 -->
     <el-aside width="220px" class="sidebar">
       <div class="logo">
-        <h2>Agent 评测系统</h2>
+        <h2>{{ t('app.title') }}</h2>
       </div>
       
       <el-menu
@@ -15,24 +15,36 @@
         active-text-color="#fff"
       >
         <el-menu-item index="/tasks/new">
-          <span>创建任务</span>
+          <span>{{ t('menu.createTask') }}</span>
         </el-menu-item>
         
         <el-menu-item index="/tasks/history">
-          <span>历史任务</span>
+          <span>{{ t('menu.taskHistory') }}</span>
         </el-menu-item>
       </el-menu>
       
       <!-- 底部配置信息 -->
       <div class="sidebar-footer">
+        <!-- 语言切换 -->
+        <div class="language-switcher">
+          <el-select v-model="currentLocale" size="small" @change="handleLanguageChange">
+            <el-option label="中文" value="zh-CN">
+              <span>🇨🇳 中文</span>
+            </el-option>
+            <el-option label="English" value="en-US">
+              <span>🇺🇸 English</span>
+            </el-option>
+          </el-select>
+        </div>
+        
         <el-divider style="border-color: rgba(255, 255, 255, 0.1);" />
         <div class="config-info">
           <div class="info-row">
-            <span class="info-label">用户</span>
+            <span class="info-label">{{ t('app.user') }}</span>
             <span class="info-value">{{ user }}</span>
           </div>
           <div class="info-row">
-            <span class="info-label">服务器</span>
+            <span class="info-label">{{ t('app.server') }}</span>
             <el-tooltip :content="serverUrl" placement="top">
               <span class="info-value server-url">{{ serverUrl }}</span>
             </el-tooltip>
@@ -51,16 +63,40 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useTaskStore } from './stores/task'
+import { ElMessage } from 'element-plus'
 
 const route = useRoute()
 const taskStore = useTaskStore()
+const { t, locale } = useI18n()
 
 const currentRoute = computed(() => route.path)
 const user = computed(() => taskStore.user)
 const serverUrl = computed(() => taskStore.serverUrl)
+
+// 当前语言
+const currentLocale = ref(locale.value)
+
+// 切换语言
+const handleLanguageChange = (lang: string) => {
+  locale.value = lang
+  localStorage.setItem('language', lang)
+  
+  // 提示用户刷新页面以应用 Element Plus 语言切换
+  ElMessage.warning({
+    message: lang === 'zh-CN' ? '语言已切换，部分组件需要刷新页面生效' : 'Language switched, please refresh the page for full effect',
+    duration: 3000,
+    showClose: true
+  })
+  
+  // 自动刷新页面
+  setTimeout(() => {
+    window.location.reload()
+  }, 1000)
+}
 </script>
 
 <style scoped>
@@ -108,6 +144,23 @@ const serverUrl = computed(() => taskStore.serverUrl)
 
 .sidebar-footer {
   padding: 0 20px 24px;
+}
+
+.language-switcher {
+  padding: 16px 0 12px;
+}
+
+.language-switcher :deep(.el-select) {
+  width: 100%;
+}
+
+.language-switcher :deep(.el-input__wrapper) {
+  background-color: rgba(255, 255, 255, 0.1);
+  box-shadow: none;
+}
+
+.language-switcher :deep(.el-input__inner) {
+  color: rgba(255, 255, 255, 0.85);
 }
 
 .config-info {
