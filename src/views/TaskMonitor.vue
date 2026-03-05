@@ -27,15 +27,21 @@
           </template>
           
           <div class="screenshot-container">
-            <el-image 
+            <img 
               v-if="latestFrame" 
               :src="latestFrame" 
-              fit="contain"
-              :preview-src-list="[latestFrame]"
+              class="live-frame"
+              @click="showImageViewer = true"
             />
             <div v-else class="empty-state">
               <p>{{ t('taskMonitor.waitingScreenshot') }}</p>
             </div>
+            <!-- Manual Image Viewer for Preview -->
+            <el-image-viewer
+              v-if="showImageViewer"
+              :url-list="[latestFrame]"
+              @close="showImageViewer = false"
+            />
           </div>
         </el-card>
 
@@ -82,6 +88,18 @@
             <el-descriptions-item :label="t('taskMonitor.completedCount')" label-class-name="desc-label">
               <el-tag type="info" effect="plain">{{ resultsCount }} {{ t('taskMonitor.samples') }}</el-tag>
             </el-descriptions-item>
+            <el-descriptions-item v-if="currentConfig?.agent" :label="t('taskNew.agentSoftware')" label-class-name="desc-label">
+              {{ currentConfig.agent.software }}
+            </el-descriptions-item>
+            <el-descriptions-item v-if="currentConfig?.agent?.model" :label="t('taskNew.llmModel')" label-class-name="desc-label">
+              <span class="mono-text">{{ currentConfig.agent.model.model_name }}</span>
+            </el-descriptions-item>
+            <el-descriptions-item v-if="currentConfig?.dataset_name" :label="t('taskNew.dataset')" label-class-name="desc-label">
+              {{ currentConfig.dataset_name }}
+            </el-descriptions-item>
+            <el-descriptions-item v-if="currentConfig?.attack_method_name" :label="t('taskNew.attackMethod')" label-class-name="desc-label">
+              {{ currentConfig.attack_method_name }}
+            </el-descriptions-item>
           </el-descriptions>
         </el-card>
 
@@ -125,6 +143,7 @@ import { useTaskStore } from '@/stores/task'
 import { WebSocketManager } from '@/utils/websocket'
 import type { TaskStatus } from '@/types'
 
+const showImageViewer = ref(false)
 const route = useRoute()
 const router = useRouter()
 const taskStore = useTaskStore()
@@ -148,6 +167,14 @@ let wsManager: WebSocketManager | null = null
 
 const isRunning = computed(() => status.value === 'running' || status.value === 'connecting')
 const resultsCount = computed(() => results.value.length)
+
+const currentConfig = computed(() => {
+  if (taskStore.currentTask?.taskId === taskId.value) {
+    return taskStore.currentTask.config as any
+  }
+  const historyTask = taskStore.taskHistory.find(t => t.taskId === taskId.value)
+  return historyTask?.config as any
+})
 
 const statusText = computed(() => {
   return t(`taskMonitor.statusMap.${status.value}` as any) || t('taskMonitor.statusMap.unknown')
@@ -409,17 +436,28 @@ onUnmounted(() => {
 }
 
 .screenshot-container {
-  height: 480px;
+  min-height: 300px; 
   background-color: #f5f7fa;
+  
+  /* Flex is used to center the "Waiting..." text when empty */
   display: flex;
-  align-items: center;
+  align-items: center; 
   justify-content: center;
+  position: relative;
+}
+
+.live-frame {
+  width: 100%;
+  height: auto;
+  display: block;
+  cursor: zoom-in;
 }
 
 .empty-state {
   text-align: center;
   color: #909399;
   font-size: 14px;
+  width: 100%;
 }
 
 .log-card {

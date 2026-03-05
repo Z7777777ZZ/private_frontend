@@ -38,17 +38,17 @@
           </template>
         </el-table-column>
         
-        <el-table-column prop="config.software" :label="t('taskHistory.software')" width="140">
+        <el-table-column prop="config.agent.software" :label="t('taskHistory.software')" width="140">
           <template #default="{ row }">
-            <span v-if="row.config" class="table-text">{{ row.config.software }}</span>
+            <span v-if="row.config?.agent" class="table-text">{{ row.config.agent.software }}</span>
             <span v-else class="text-muted">-</span>
           </template>
         </el-table-column>
         
-        <el-table-column prop="config.llm_name" :label="t('taskHistory.model')" width="160">
+        <el-table-column prop="config.agent.model.model_name" :label="t('taskHistory.model')" width="180">
           <template #default="{ row }">
-            <el-tag v-if="row.config" effect="plain" size="small">
-              {{ row.config.llm_name }}
+            <el-tag v-if="row.config?.agent?.model" effect="plain" size="small">
+              {{ row.config.agent.model.model_name }}
             </el-tag>
             <span v-else class="text-muted">-</span>
           </template>
@@ -112,12 +112,12 @@
           {{ selectedTask.startTime }}
         </el-descriptions-item>
         
-        <el-descriptions-item :label="t('taskHistory.agentSoftware')" v-if="selectedTask.config">
-          {{ selectedTask.config.software }}
+        <el-descriptions-item :label="t('taskHistory.agentSoftware')" v-if="selectedTask.config?.agent">
+          {{ selectedTask.config.agent.software }}
         </el-descriptions-item>
         
-        <el-descriptions-item :label="t('taskHistory.llmModel')" v-if="selectedTask.config">
-          {{ selectedTask.config.llm_name }}
+        <el-descriptions-item :label="t('taskHistory.llmModel')" v-if="selectedTask.config?.agent?.model">
+          {{ selectedTask.config.agent.model.model_name }}
         </el-descriptions-item>
         
         <el-descriptions-item :label="t('taskHistory.dataset')" v-if="selectedTask.config">
@@ -238,7 +238,7 @@
             <el-descriptions :column="1" border>
               <el-descriptions-item label="ID">{{ fullReport.sample.id }}</el-descriptions-item>
               <el-descriptions-item :label="t('taskHistory.input')">
-                <pre style="white-space: pre-wrap;">{{ fullReport.sample.input }}</pre>
+                <pre style="white-space: pre-wrap;">{{ fullReport.sample.user_instruction || fullReport.sample.input }}</pre>
               </el-descriptions-item>
               <el-descriptions-item :label="t('taskHistory.metadata')" v-if="fullReport.sample.metadata">
                 <el-input 
@@ -384,8 +384,8 @@ const handleRetry = async (task: any) => {
       if (task.config.dataset_name) {
         // 数据集任务
         result = await taskStore.startDatasetTask(task.config)
-      } else if (task.config.question || task.config.prompt) {
-        // 单样本任务
+      } else if (task.config.sample) {
+        // 单样本任务（ExperimentConfig 结构）
         result = await taskStore.startSingleSampleTask(task.config)
       } else {
         ElMessage.error(t('taskHistory.messages.unknownTaskType'))
