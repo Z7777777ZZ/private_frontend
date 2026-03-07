@@ -34,11 +34,8 @@ export default {
     taskCanceled: 'Task canceled',
     cancelFailed: 'Failed to cancel task',
     logCleared: 'Logs cleared',
-    chatTab: 'Chat',
+    realtimeLogTab: 'Realtime Log',
     rawLogTab: 'Raw Log',
-    inputPlaceholder: 'Type a message...',
-    inputHint: 'Ctrl+Enter to send',
-    send: 'Send',
     statusMap: {
       pending: 'Pending',
       connecting: 'Connecting',

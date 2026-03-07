@@ -34,11 +34,8 @@ export default {
     taskCanceled: '任务已取消',
     cancelFailed: '取消任务失败',
     logCleared: '日志已清空',
-    chatTab: '聊天日志',
+    realtimeLogTab: '实时日志',
     rawLogTab: '原始日志',
-    inputPlaceholder: '输入消息...',
-    inputHint: 'Ctrl+Enter 发送',
-    send: '发送',
     statusMap: {
       pending: '等待中',
       connecting: '连接中',

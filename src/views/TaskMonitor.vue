@@ -101,14 +101,14 @@
         </div>
       </el-col>
 
-      <!-- Right Column: Full-height Chat/Log Panel -->
+      <!-- Right Column: Full-height Log Panel -->
       <el-col :span="11" class="right-column">
         <div class="log-panel-card glass-card monitor-card log-panel-full-height">
           <div class="card-header">
             <el-tabs v-model="activeLogTab" class="log-tabs">
-              <el-tab-pane :label="t('taskMonitor.chatTab')" name="chat">
+              <el-tab-pane :label="t('taskMonitor.realtimeLogTab')" name="chat">
                 <template #label>
-                  <span class="tab-label">{{ t('taskMonitor.chatTab') }}</span>
+                  <span class="tab-label">{{ t('taskMonitor.realtimeLogTab') }}</span>
                 </template>
               </el-tab-pane>
               <el-tab-pane :label="t('taskMonitor.rawLogTab')" name="raw">
@@ -122,7 +122,7 @@
             </el-button>
           </div>
 
-          <!-- Chat Tab Content -->
+          <!-- Realtime Log Tab Content -->
           <div v-show="activeLogTab === 'chat'" class="chat-log-wrapper">
             <div class="chat-log-container" ref="logContainerRef">
               <div v-if="logs.length === 0 && status !== 'connecting'" class="chat-log-empty">
@@ -160,24 +160,6 @@
                     <span class="typing-dot"></span>
                   </div>
                 </div>
-              </div>
-            </div>
-
-            <!-- Chat Input Area -->
-            <div class="chat-input-area">
-              <el-input
-                v-model="chatInput"
-                type="textarea"
-                :rows="2"
-                :placeholder="t('taskMonitor.inputPlaceholder')"
-                @keyup.ctrl.enter="sendChatMessage"
-                class="chat-input"
-              />
-              <div class="chat-input-actions">
-                <span class="input-hint">{{ t('taskMonitor.inputHint') }}</span>
-                <el-button type="primary" @click="sendChatMessage" size="small" class="send-btn">
-                  {{ t('taskMonitor.send') }}
-                </el-button>
               </div>
             </div>
           </div>
@@ -269,7 +251,6 @@ const results = ref<any[]>([])
 const logContainerRef = ref<HTMLElement>()
 const activeLogTab = ref('chat')
 const resultsDrawerVisible = ref(false)
-const chatInput = ref('')
 
 let durationTimer: number | null = null
 let wsManager: WebSocketManager | null = null
@@ -538,24 +519,6 @@ const handleBack = () => {
 const clearLogs = () => {
   logs.value = []
   ElMessage.info(t('taskMonitor.logCleared'))
-}
-
-/**
- * 发送聊天消息（本地显示）
- */
-const sendChatMessage = () => {
-  if (!chatInput.value.trim()) return
-
-  // 添加用户消息到日志（本地显示）
-  const timestamp = new Date().toLocaleTimeString()
-  logs.value.push({
-    message: chatInput.value,
-    timestamp: timestamp,
-    type: 'user'
-  })
-
-  chatInput.value = ''
-  scrollLogToBottom()
 }
 
 // ==================== 生命周期 ====================
