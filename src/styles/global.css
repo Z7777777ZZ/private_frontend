@@ -1,47 +1,205 @@
 /**
  * 全局样式
+ * Global Styles with Tech Glassmorphism Theme
+ *
+ * Note: CSS modules are imported in main.ts instead of using @import
+ * to avoid Vite PostCSS processing issues.
  */
 
+/* ============================================
+   BASE RESET
+   ============================================ */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+/* ============================================
+   BODY STYLES
+   ============================================ */
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: var(--bg-dark-primary);
+  color: var(--text-primary);
 }
 
+/* ============================================
+   APP ROOT
+   ============================================ */
 #app {
   height: 100vh;
   width: 100vw;
   overflow: hidden;
+  position: relative;
 }
 
-/* 滚动条样式 */
+/* Add dynamic background to app */
+#app::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: var(--bg-dark-primary);
+  background-image:
+    linear-gradient(rgba(139, 92, 246, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(139, 92, 246, 0.06) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Ambient glow orbs */
+#app::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 400px 400px at 20% 20%, rgba(139, 92, 246, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse 350px 350px at 80% 60%, rgba(6, 182, 212, 0.1) 0%, transparent 50%),
+    radial-gradient(ellipse 300px 300px at 50% 80%, rgba(236, 72, 153, 0.08) 0%, transparent 50%);
+}
+
+/* ============================================
+   SCROLLBAR STYLES
+   ============================================ */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #888;
+  background: rgba(255, 255, 255, 0.03);
   border-radius: 4px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #555;
+::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.3);
+  border-radius: 4px;
+  transition: background var(--duration-normal) var(--ease-out-cubic);
 }
 
-/* 代码字体 */
-.code-text {
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.5);
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-color: rgba(139, 92, 246, 0.3) rgba(255, 255, 255, 0.03);
+  scrollbar-width: thin;
+}
+
+/* ============================================
+   SELECTION STYLES
+   ============================================ */
+::selection {
+  background: rgba(139, 92, 246, 0.3);
+  color: var(--text-primary);
+}
+
+::-moz-selection {
+  background: rgba(139, 92, 246, 0.3);
+  color: var(--text-primary);
+}
+
+/* ============================================
+   FOCUS STYLES
+   ============================================ */
+:focus-visible {
+  outline: 2px solid var(--color-accent-purple);
+  outline-offset: 2px;
+}
+
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-primary);
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+h1 { font-size: 28px; }
+h2 { font-size: 24px; }
+h3 { font-size: 20px; }
+h4 { font-size: 18px; }
+h5 { font-size: 16px; }
+h6 { font-size: 14px; }
+
+p {
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+a {
+  color: var(--color-accent-cyan);
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-out-cubic);
+}
+
+a:hover {
+  color: var(--color-accent-cyan-light);
+}
+
+/* ============================================
+   CODE FONTS
+   ============================================ */
+.code-text,
+code,
+kbd,
+samp,
+pre {
   font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+code {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.9em;
+  color: var(--color-accent-cyan-light);
+}
+
+pre {
+  background: rgba(0, 0, 0, 0.4);
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+  border: 1px solid var(--glass-border);
+}
+
+pre code {
+  background: none;
+  padding: 0;
+  color: var(--text-code-dim);
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-tertiary { color: var(--text-tertiary); }
+.text-muted { color: var(--text-muted); }
+
+.text-gradient {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.mono { font-family: 'Consolas', 'Monaco', 'Courier New', monospace; }
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  h1 { font-size: 24px; }
+  h2 { font-size: 20px; }
+  h3 { font-size: 18px; }
 }

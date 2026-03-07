@@ -1,0 +1,552 @@
+/**
+ * Interactive Micro-animations
+ * Button effects, input focus, card hover, list items
+ */
+
+/* ============================================
+   BUTTON LIGHT FLOW EFFECT
+   ============================================ */
+.btn-light-flow {
+  position: relative;
+  overflow: hidden;
+  transition: all var(--duration-normal) var(--ease-out-cubic);
+}
+
+.btn-light-flow::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: var(--gradient-shimmer);
+  transition: left var(--duration-slower) var(--ease-out-cubic);
+}
+
+.btn-light-flow:hover::before {
+  left: 100%;
+}
+
+.btn-light-flow:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
+}
+
+/* ============================================
+   BUTTON GLOW ON HOVER
+   ============================================ */
+.btn-glow {
+  transition: all var(--duration-normal) var(--ease-out-cubic);
+}
+
+.btn-glow:hover {
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.4),
+              0 0 40px rgba(139, 92, 246, 0.2);
+  transform: translateY(-2px);
+}
+
+/* ============================================
+   BUTTON RIPPLE EFFECT
+   ============================================ */
+.btn-ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-ripple .ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  transform: scale(0);
+  animation: ripple 0.6s linear;
+  pointer-events: none;
+}
+
+/* ============================================
+   INPUT GLOW FOCUS EFFECT
+   ============================================ */
+.input-glow {
+  transition: all var(--duration-normal) var(--ease-out-cubic);
+}
+
+.input-glow:focus {
+  outline: none;
+  border-color: var(--color-accent-purple);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15),
+              0 0 20px rgba(139, 92, 246, 0.2),
+              inset 0 0 10px rgba(139, 92, 246, 0.05);
+}
+
+/* Input with animated bottom border */
+.input-animated-border {
+  position: relative;
+  border: none;
+  border-bottom: 2px solid var(--glass-border);
+  background: transparent;
+  padding: 12px 0;
+  transition: all var(--duration-normal) var(--ease-out-cubic);
+}
+
+.input-animated-border:focus {
+  outline: none;
+  border-bottom-color: transparent;
+}
+
+.input-animated-border::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--gradient-primary);
+  transition: width var(--duration-normal) var(--ease-out-cubic);
+}
+
+.input-animated-border:focus::after {
+  width: 100%;
+}
+
+/* ============================================
+   TEXTAREA AUTO-EXPAND INDICATOR
+   ============================================ */
+.textarea-expandable {
+  min-height: 44px;
+  max-height: 200px;
+  overflow-y: auto;
+  resize: none;
+  transition: min-height var(--duration-normal) var(--ease-out-cubic);
+}
+
+.textarea-expandable:focus {
+  min-height: 88px;
+}
+
+/* ============================================
+   CARD 3D TILT EFFECT
+   ============================================ */
+.card-3d {
+  transition: transform var(--duration-slow) var(--ease-out-cubic),
+              box-shadow var(--duration-normal) var(--ease-out-cubic);
+  transform-style: preserve-3d;
+}
+
+.card-3d:hover {
+  transform: perspective(1000px) rotateX(5deg) rotateY(-5deg) translateZ(10px);
+  box-shadow: 20px 20px 60px rgba(0, 0, 0, 0.3),
+              -5px -5px 20px rgba(255, 255, 255, 0.05);
+}
+
+/* Subtle tilt variant */
+.card-tilt {
+  transition: transform var(--duration-normal) var(--ease-out-cubic);
+}
+
+.card-tilt:hover {
+  transform: translateY(-4px) perspective(1000px) rotateX(2deg);
+}
+
+/* ============================================
+   CARD LIFT EFFECT
+   ============================================ */
+.card-lift {
+  transition: all var(--duration-normal) var(--ease-out-cubic);
+}
+
+.card-lift:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* ============================================
+   CARD INNER GLOW
+   ============================================ */
+.card-inner-glow {
+  position: relative;
+  overflow: hidden;
+}
+
+.card-inner-glow::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(139, 92, 246, 0.15) 0%,
+    transparent 50%
+  );
+  opacity: 0;
+  transition: opacity var(--duration-normal) var(--ease-out-cubic);
+  pointer-events: none;
+}
+
+.card-inner-glow:hover::before {
+  opacity: 1;
+}
+
+/* ============================================
+   LIST ITEM SHIMMER
+   ============================================ */
+.list-item-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.list-item-shimmer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    transparent 100%
+  );
+  transition: left 0.5s var(--ease-out-cubic);
+}
+
+.list-item-shimmer:hover::before {
+  left: 100%;
+}
+
+/* ============================================
+   LIST ITEM SLIDE HIGHLIGHT
+   ============================================ */
+.list-item-highlight {
+  position: relative;
+  transition: all var(--duration-normal) var(--ease-out-cubic);
+}
+
+.list-item-highlight::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--gradient-primary);
+  transform: scaleY(0);
+  transition: transform var(--duration-normal) var(--ease-out-cubic);
+}
+
+.list-item-highlight:hover::after {
+  transform: scaleY(1);
+}
+
+.list-item-highlight:hover {
+  background: rgba(139, 92, 246, 0.1);
+}
+
+/* ============================================
+   PROGRESS BAR WITH FLOWING ANIMATION
+   ============================================ */
+.progress-flow {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-flow-bar {
+  height: 100%;
+  background: var(--gradient-primary);
+  border-radius: var(--radius-full);
+  position: relative;
+  transition: width var(--duration-slow) var(--ease-out-cubic);
+}
+
+.progress-flow-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: progress-stripe 1.5s linear infinite;
+}
+
+/* Striped progress bar */
+.progress-striped {
+  background-image: linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.15) 25%,
+    transparent 25%,
+    transparent 50%,
+    rgba(255, 255, 255, 0.15) 50%,
+    rgba(255, 255, 255, 0.15) 75%,
+    transparent 75%,
+    transparent
+  );
+  background-size: 20px 20px;
+  animation: progress-stripe 1s linear infinite;
+}
+
+/* ============================================
+   SWITCH/TOGGLE ANIMATION
+   ============================================ */
+.toggle-switch {
+  position: relative;
+  width: 48px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--duration-normal) var(--ease-out-cubic);
+}
+
+.toggle-switch::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background: white;
+  border-radius: 50%;
+  transition: all var(--duration-normal) var(--ease-spring);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-switch.active {
+  background: var(--gradient-primary);
+}
+
+.toggle-switch.active::after {
+  left: 26px;
+}
+
+/* ============================================
+   CHECKBOX ANIMATION
+   ============================================ */
+.checkbox-animated {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--duration-normal) var(--ease-out-cubic);
+  overflow: hidden;
+}
+
+.checkbox-animated:hover {
+  border-color: var(--color-accent-purple);
+}
+
+.checkbox-animated.checked {
+  background: var(--gradient-primary);
+  border-color: transparent;
+}
+
+.checkbox-animated.checked::after {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  animation: scale-in 0.2s var(--ease-spring);
+}
+
+/* ============================================
+   RADIO BUTTON ANIMATION
+   ============================================ */
+.radio-animated {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--glass-border);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all var(--duration-normal) var(--ease-out-cubic);
+}
+
+.radio-animated:hover {
+  border-color: var(--color-accent-purple);
+}
+
+.radio-animated.checked {
+  border-color: var(--color-accent-purple);
+}
+
+.radio-animated.checked::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  width: 10px;
+  height: 10px;
+  background: var(--gradient-primary);
+  border-radius: 50%;
+  animation: scale-in 0.2s var(--ease-spring) forwards;
+}
+
+/* ============================================
+   LINK HOVER EFFECT
+   ============================================ */
+.link-underline {
+  position: relative;
+  text-decoration: none;
+  color: var(--color-accent-cyan);
+  transition: color var(--duration-fast) var(--ease-out-cubic);
+}
+
+.link-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--gradient-cyan);
+  transition: width var(--duration-normal) var(--ease-out-cubic);
+}
+
+.link-underline:hover::after {
+  width: 100%;
+}
+
+/* ============================================
+   IMAGE ZOOM ON HOVER
+   ============================================ */
+.img-zoom {
+  overflow: hidden;
+  transition: transform var(--duration-normal) var(--ease-out-cubic);
+}
+
+.img-zoom img {
+  transition: transform var(--duration-slow) var(--ease-out-cubic);
+}
+
+.img-zoom:hover img {
+  transform: scale(1.1);
+}
+
+/* ============================================
+   ICON SPIN ON HOVER
+   ============================================ */
+.icon-spin-hover {
+  transition: transform var(--duration-normal) var(--ease-out-cubic);
+}
+
+.icon-spin-hover:hover {
+  transform: rotate(180deg);
+}
+
+/* ============================================
+   ICON BOUNCE ON CLICK
+   ============================================ */
+.icon-bounce-click:active {
+  animation: bounce 0.4s ease;
+}
+
+/* ============================================
+   TAG / CHIP HOVER
+   ============================================ */
+.tag-hover {
+  transition: all var(--duration-normal) var(--ease-out-cubic);
+  cursor: pointer;
+}
+
+.tag-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Remove button on tags */
+.tag-remove {
+  margin-left: 6px;
+  opacity: 0.6;
+  transition: opacity var(--duration-fast) var(--ease-out-cubic);
+}
+
+.tag-hover:hover .tag-remove {
+  opacity: 1;
+}
+
+/* ============================================
+   DROPDOWN HOVER
+   ============================================ */
+.dropdown-trigger:hover .dropdown-arrow {
+  transform: rotate(180deg);
+}
+
+.dropdown-arrow {
+  transition: transform var(--duration-normal) var(--ease-out-cubic);
+}
+
+/* ============================================
+   TOOLTIP POP-IN
+   ============================================ */
+.tooltip-pop {
+  animation: scale-in 0.2s var(--ease-spring);
+}
+
+/* ============================================
+   MODAL BACKDROP FADE
+   ============================================ */
+.modal-backdrop-fade {
+  animation: fade-in 0.3s ease;
+}
+
+.modal-content-slide {
+  animation: fade-in-scale 0.3s var(--ease-spring);
+}
+
+/* ============================================
+   SKELETON LOADING
+   ============================================ */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.05) 25%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.05) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-sm);
+}
+
+/* ============================================
+   FOCUS VISIBLE FOR ACCESSIBILITY
+   ============================================ */
+.focus-visible-ring:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.4);
+}
+
+/* ============================================
+   REDUCED MOTION SUPPORT
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  .btn-light-flow:hover::before,
+  .list-item-shimmer:hover::before,
+  .progress-flow-bar::after,
+  .progress-striped {
+    animation: none;
+  }
+
+  .card-3d:hover,
+  .card-tilt:hover {
+    transform: none;
+  }
+}

@@ -1,0 +1,643 @@
+/**
+ * Element Plus Component Overrides
+ * Glassmorphism theme for Element Plus UI library
+ */
+
+/* ============================================
+   GLOBAL ELEMENT PLUS OVERRIDES
+   ============================================ */
+
+/* Dark theme for all Element Plus components */
+.el-button,
+.el-input,
+.el-select,
+.el-textarea,
+.el-card,
+.el-dialog,
+.el-drawer,
+.el-dropdown,
+.el-menu,
+.el-table,
+.el-pagination,
+.el-tag,
+.el-progress,
+.el-switch,
+.el-checkbox,
+.el-radio,
+.el-tooltip__popper,
+.el-popover,
+.el-message,
+.el-notification,
+.el-loading-mask {
+  --el-color-primary: var(--color-primary-start);
+  --el-color-primary-light-3: var(--color-primary-light);
+  --el-color-primary-light-5: var(--color-accent-purple);
+  --el-color-primary-light-7: var(--color-accent-purple-light);
+  --el-color-primary-light-8: var(--color-accent-purple-light);
+  --el-color-primary-light-9: var(--color-accent-purple-light);
+  --el-color-primary-dark-2: var(--color-primary-dark);
+  --el-text-color-primary: var(--text-primary);
+  --el-text-color-regular: var(--text-secondary);
+  --el-text-color-secondary: var(--text-tertiary);
+  --el-text-color-placeholder: var(--text-muted);
+  --el-bg-color: rgba(26, 26, 62, 0.6);
+  --el-bg-color-page: transparent;
+  --el-bg-color-overlay: rgba(15, 15, 35, 0.95);
+  --el-border-color: var(--glass-border);
+  --el-border-color-light: rgba(255, 255, 255, 0.1);
+  --el-border-color-lighter: rgba(255, 255, 255, 0.05);
+  --el-border-color-extra-light: rgba(255, 255, 255, 0.03);
+  --el-border-color-dark: rgba(255, 255, 255, 0.2);
+  --el-border-color-darker: rgba(255, 255, 255, 0.25);
+  --el-fill-color: rgba(255, 255, 255, 0.05);
+  --el-fill-color-light: rgba(255, 255, 255, 0.08);
+  --el-fill-color-lighter: rgba(255, 255, 255, 0.03);
+  --el-fill-color-extra-light: rgba(255, 255, 255, 0.02);
+  --el-fill-color-dark: rgba(255, 255, 255, 0.1);
+  --el-fill-color-darker: rgba(255, 255, 255, 0.15);
+  --el-fill-color-blank: transparent;
+  --el-box-shadow: var(--glass-shadow);
+  --el-box-shadow-light: 0 0 12px rgba(0, 0, 0, 0.3);
+  --el-box-shadow-lighter: 0 0 8px rgba(0, 0, 0, 0.2);
+  --el-box-shadow-dark: 0 16px 48px rgba(0, 0, 0, 0.4);
+  --el-disabled-bg-color: rgba(255, 255, 255, 0.03);
+  --el-disabled-border-color: rgba(255, 255, 255, 0.05);
+  --el-overlay-color: rgba(15, 15, 35, 0.8);
+  --el-overlay-color-light: rgba(15, 15, 35, 0.6);
+  --el-overlay-color-lighter: rgba(15, 15, 35, 0.4);
+  --el-mask-color: rgba(0, 0, 0, 0.5);
+  --el-disabled-text-color: var(--text-muted);
+}
+
+/* ============================================
+   BUTTON OVERRIDES
+   ============================================ */
+.el-button {
+  backdrop-filter: blur(var(--blur-sm));
+  -webkit-backdrop-filter: blur(var(--blur-sm));
+  border: 1px solid var(--glass-border);
+  transition: all var(--duration-normal) var(--ease-out-cubic);
+}
+
+.el-button--primary {
+  background: var(--gradient-primary);
+  border: none;
+  box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+}
+
+.el-button--primary:hover {
+  box-shadow: 0 8px 30px rgba(79, 70, 229, 0.5);
+  transform: translateY(-2px);
+}
+
+.el-button--success {
+  background: var(--gradient-green);
+  border: none;
+}
+
+.el-button--warning {
+  background: var(--gradient-orange);
+  border: none;
+}
+
+.el-button--danger {
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  border: none;
+}
+
+.el-button--info {
+  background: linear-gradient(135deg, #6B7280 0%, #4B5563 100%);
+  border: none;
+}
+
+.el-button--default {
+  background: var(--glass-bg);
+  border-color: var(--glass-border);
+  color: var(--text-primary);
+}
+
+.el-button--default:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--glass-border-hover);
+}
+
+/* ============================================
+   INPUT OVERRIDES
+   ============================================ */
+.el-input__wrapper {
+  background: rgba(255, 255, 255, 0.05) !important;
+  backdrop-filter: blur(var(--blur-sm));
+  -webkit-backdrop-filter: blur(var(--blur-sm));
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: none !important;
+  transition: all var(--duration-normal) var(--ease-out-cubic);
+}
+
+.el-input__wrapper:hover {
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.el-input__wrapper.is-focus {
+  border-color: var(--color-accent-purple) !important;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15),
+              0 0 20px rgba(139, 92, 246, 0.1) !important;
+}
+
+.el-input__inner {
+  color: var(--text-primary) !important;
+}
+
+.el-input__inner::placeholder {
+  color: var(--text-muted);
+}
+
+/* ============================================
+   TEXTAREA OVERRIDES
+   ============================================ */
+.el-textarea__inner {
+  background: rgba(255, 255, 255, 0.05) !important;
+  backdrop-filter: blur(var(--blur-sm));
+  -webkit-backdrop-filter: blur(var(--blur-sm));
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--radius-md) !important;
+  color: var(--text-primary) !important;
+  transition: all var(--duration-normal) var(--ease-out-cubic);
+}
+
+.el-textarea__inner:hover {
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.el-textarea__inner:focus {
+  border-color: var(--color-accent-purple) !important;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15),
+              0 0 20px rgba(139, 92, 246, 0.1) !important;
+}
+
+/* ============================================
+   SELECT OVERRIDES
+   ============================================ */
+.el-select__wrapper {
+  background: rgba(255, 255, 255, 0.05) !important;
+  backdrop-filter: blur(var(--blur-sm));
+  -webkit-backdrop-filter: blur(var(--blur-sm));
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: none !important;
+}
+
+.el-select__wrapper:hover {
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.el-select__wrapper.is-focus {
+  border-color: var(--color-accent-purple) !important;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15) !important;
+}
+
+.el-select-dropdown {
+  background: rgba(26, 26, 62, 0.95) !important;
+  backdrop-filter: blur(var(--blur-xl)) !important;
+  -webkit-backdrop-filter: blur(var(--blur-xl)) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--radius-lg) !important;
+}
+
+.el-select-dropdown__item {
+  color: var(--text-secondary) !important;
+}
+
+.el-select-dropdown__item:hover,
+.el-select-dropdown__item.is-selected {
+  background: rgba(139, 92, 246, 0.2) !important;
+  color: var(--text-primary) !important;
+}
+
+/* ============================================
+   CARD OVERRIDES
+   ============================================ */
+.el-card {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(var(--blur-md)) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(180%);
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--radius-xl) !important;
+  box-shadow: var(--glass-shadow) !important;
+}
+
+.el-card__header {
+  background: transparent !important;
+  border-bottom: 1px solid var(--glass-border) !important;
+  color: var(--text-primary) !important;
+}
+
+.el-card__body {
+  color: var(--text-secondary) !important;
+}
+
+/* ============================================
+   DIALOG OVERRIDES
+   ============================================ */
+.el-dialog {
+  background: var(--glass-bg-heavy) !important;
+  backdrop-filter: blur(var(--blur-xl)) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--blur-xl)) saturate(180%);
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--radius-2xl) !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4) !important;
+}
+
+.el-dialog__header {
+  border-bottom: 1px solid var(--glass-border);
+  margin: 0 !important;
+  padding: var(--space-lg) !important;
+}
+
+.el-dialog__title {
+  color: var(--text-primary) !important;
+  font-weight: 500;
+}
+
+.el-dialog__body {
+  color: var(--text-secondary) !important;
+  padding: var(--space-lg) !important;
+}
+
+.el-dialog__footer {
+  border-top: 1px solid var(--glass-border);
+  padding: var(--space-lg) !important;
+}
+
+.el-overlay {
+  background: rgba(15, 15, 35, 0.8) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* ============================================
+   MENU OVERRIDES
+   ============================================ */
+.el-menu {
+  background: transparent !important;
+  border: none !important;
+}
+
+.el-menu-item {
+  color: var(--text-secondary) !important;
+  transition: all var(--duration-normal) var(--ease-out-cubic);
+  border-radius: var(--radius-md);
+  margin: var(--space-xs) var(--space-sm);
+}
+
+.el-menu-item:hover {
+  background: rgba(139, 92, 246, 0.15) !important;
+  color: var(--text-primary) !important;
+}
+
+.el-menu-item.is-active {
+  background: var(--gradient-primary) !important;
+  color: var(--text-primary) !important;
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+}
+
+/* ============================================
+   TABLE OVERRIDES
+   ============================================ */
+.el-table {
+  background: transparent !important;
+  --el-table-border-color: var(--glass-border);
+  --el-table-bg-color: transparent;
+  --el-table-tr-bg-color: transparent;
+  --el-table-current-row-bg-color: rgba(139, 92, 246, 0.1);
+  --el-table-header-bg-color: rgba(139, 92, 246, 0.1);
+  --el-table-row-hover-bg-color: rgba(139, 92, 246, 0.08);
+}
+
+.el-table th.el-table__cell {
+  background: rgba(139, 92, 246, 0.1) !important;
+  color: var(--text-primary) !important;
+  border-bottom: 1px solid var(--glass-border) !important;
+}
+
+.el-table td.el-table__cell {
+  border-bottom: 1px solid var(--glass-border) !important;
+  color: var(--text-secondary) !important;
+}
+
+.el-table tr:hover td.el-table__cell {
+  background: rgba(139, 92, 246, 0.08) !important;
+}
+
+.el-table--striped .el-table__body tr.el-table__row--striped td.el-table__cell {
+  background: rgba(255, 255, 255, 0.02) !important;
+}
+
+/* ============================================
+   TAG OVERRIDES
+   ============================================ */
+.el-tag {
+  backdrop-filter: blur(var(--blur-sm));
+  -webkit-backdrop-filter: blur(var(--blur-sm));
+  border: 1px solid currentColor;
+  font-weight: 500;
+}
+
+.el-tag--primary {
+  background: rgba(79, 70, 229, 0.2) !important;
+  border-color: rgba(79, 70, 229, 0.4) !important;
+  color: var(--color-accent-purple-light) !important;
+}
+
+.el-tag--success {
+  background: rgba(16, 185, 129, 0.2) !important;
+  border-color: rgba(16, 185, 129, 0.4) !important;
+  color: var(--color-accent-green-light) !important;
+}
+
+.el-tag--warning {
+  background: rgba(245, 158, 11, 0.2) !important;
+  border-color: rgba(245, 158, 11, 0.4) !important;
+  color: var(--color-accent-orange-light) !important;
+}
+
+.el-tag--danger {
+  background: rgba(239, 68, 68, 0.2) !important;
+  border-color: rgba(239, 68, 68, 0.4) !important;
+  color: var(--color-accent-red-light) !important;
+}
+
+.el-tag--info {
+  background: rgba(107, 114, 128, 0.2) !important;
+  border-color: rgba(107, 114, 128, 0.4) !important;
+  color: rgba(226, 232, 240, 0.8) !important;
+}
+
+/* ============================================
+   CHECKBOX & RADIO OVERRIDES
+   ============================================ */
+.el-checkbox__input.is-checked .el-checkbox__inner {
+  background: var(--gradient-primary) !important;
+  border-color: var(--color-accent-purple) !important;
+}
+
+.el-radio__input.is-checked .el-radio__inner {
+  background: var(--gradient-primary) !important;
+  border-color: var(--color-accent-purple) !important;
+}
+
+.el-checkbox__inner,
+.el-radio__inner {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid var(--glass-border) !important;
+}
+
+/* ============================================
+   SWITCH OVERRIDES
+   ============================================ */
+.el-switch.is-checked .el-switch__core {
+  background: var(--gradient-primary) !important;
+  border-color: var(--color-accent-purple) !important;
+}
+
+.el-switch__core {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid var(--glass-border) !important;
+}
+
+/* ============================================
+   PROGRESS BAR OVERRIDES
+   ============================================ */
+.el-progress-bar__inner {
+  background: var(--gradient-primary) !important;
+}
+
+.el-progress.is-success .el-progress-bar__inner {
+  background: var(--gradient-green) !important;
+}
+
+/* ============================================
+   PAGINATION OVERRIDES
+   ============================================ */
+.el-pagination {
+  color: var(--text-secondary) !important;
+}
+
+.el-pagination button {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: var(--text-secondary) !important;
+  border: 1px solid var(--glass-border) !important;
+}
+
+.el-pagination button:hover {
+  color: var(--color-accent-purple) !important;
+}
+
+.el-pagination button.is-active {
+  background: var(--gradient-primary) !important;
+  color: var(--text-primary) !important;
+  border-color: transparent !important;
+}
+
+.el-pager li {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: var(--text-secondary) !important;
+  border: 1px solid var(--glass-border) !important;
+}
+
+.el-pager li:hover {
+  color: var(--color-accent-purple) !important;
+}
+
+.el-pager li.is-active {
+  background: var(--gradient-primary) !important;
+  color: var(--text-primary) !important;
+}
+
+/* ============================================
+   TOOLTIP & POPOVER OVERRIDES
+   ============================================ */
+.el-tooltip__popper,
+.el-popover {
+  background: rgba(26, 26, 62, 0.95) !important;
+  backdrop-filter: blur(var(--blur-lg)) !important;
+  -webkit-backdrop-filter: blur(var(--blur-lg)) !important;
+  border: 1px solid var(--glass-border) !important;
+  color: var(--text-primary) !important;
+}
+
+.el-popper__arrow::before {
+  background: rgba(26, 26, 62, 0.95) !important;
+  border: 1px solid var(--glass-border) !important;
+}
+
+/* ============================================
+   MESSAGE & NOTIFICATION OVERRIDES
+   ============================================ */
+.el-message {
+  background: var(--glass-bg-heavy) !important;
+  backdrop-filter: blur(var(--blur-lg)) !important;
+  -webkit-backdrop-filter: blur(var(--blur-lg)) !important;
+  border: 1px solid var(--glass-border) !important;
+  color: var(--text-primary) !important;
+}
+
+.el-notification {
+  background: var(--glass-bg-heavy) !important;
+  backdrop-filter: blur(var(--blur-lg)) !important;
+  -webkit-backdrop-filter: blur(var(--blur-lg)) !important;
+  border: 1px solid var(--glass-border) !important;
+  color: var(--text-primary) !important;
+}
+
+/* ============================================
+   LOADING OVERRIDES
+   ============================================ */
+.el-loading-mask {
+  background: rgba(15, 15, 35, 0.8) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.el-loading-spinner {
+  color: var(--color-accent-purple);
+}
+
+.el-loading-spinner .circular {
+  stroke: var(--color-accent-purple);
+}
+
+/* ============================================
+   DIVIDER OVERRIDES
+   ============================================ */
+.el-divider {
+  border-top: 1px solid var(--glass-border) !important;
+}
+
+.el-divider__text {
+  background: transparent !important;
+  color: var(--text-secondary) !important;
+}
+
+/* ============================================
+   TABS OVERRIDES
+   ============================================ */
+.el-tabs__item {
+  color: var(--text-tertiary) !important;
+}
+
+.el-tabs__item:hover {
+  color: var(--text-primary) !important;
+}
+
+.el-tabs__item.is-active {
+  color: var(--color-accent-purple) !important;
+}
+
+.el-tabs__active-bar {
+  background: var(--gradient-primary) !important;
+}
+
+.el-tabs--border-card {
+  background: rgba(26, 26, 62, 0.5) !important;
+  border: 1px solid var(--glass-border) !important;
+}
+
+/* ============================================
+   FORM OVERRIDES
+   ============================================ */
+.el-form-item__label {
+  color: var(--text-secondary) !important;
+}
+
+/* ============================================
+   DROPDOWN OVERRIDES
+   ============================================ */
+.el-dropdown-menu {
+  background: rgba(26, 26, 62, 0.95) !important;
+  backdrop-filter: blur(var(--blur-xl)) !important;
+  -webkit-backdrop-filter: blur(var(--blur-xl)) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--radius-lg) !important;
+  padding: var(--space-xs);
+}
+
+.el-dropdown-menu__item {
+  color: var(--text-secondary) !important;
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  transition: all var(--duration-fast) var(--ease-out-cubic);
+}
+
+.el-dropdown-menu__item:hover {
+  background: rgba(139, 92, 246, 0.2) !important;
+  color: var(--text-primary) !important;
+}
+
+/* ============================================
+   DESCRUPTIONS OVERRIDES
+   ============================================ */
+.el-descriptions {
+  color: var(--text-secondary) !important;
+}
+
+.el-descriptions__label {
+  color: var(--text-secondary) !important;
+}
+
+.el-descriptions__content {
+  color: var(--text-primary) !important;
+}
+
+.el-descriptions__cell {
+  border-color: var(--glass-border) !important;
+}
+
+/* ============================================
+   ALERT OVERRIDES
+   ============================================ */
+.el-alert {
+  backdrop-filter: blur(var(--blur-sm));
+  -webkit-backdrop-filter: blur(var(--blur-sm));
+  border: 1px solid currentColor;
+}
+
+.el-alert--success {
+  background: rgba(16, 185, 129, 0.15) !important;
+  border-color: rgba(16, 185, 129, 0.3) !important;
+}
+
+.el-alert--warning {
+  background: rgba(245, 158, 11, 0.15) !important;
+  border-color: rgba(245, 158, 11, 0.3) !important;
+}
+
+.el-alert--error {
+  background: rgba(239, 68, 68, 0.15) !important;
+  border-color: rgba(239, 68, 68, 0.3) !important;
+}
+
+.el-alert--info {
+  background: rgba(59, 130, 246, 0.15) !important;
+  border-color: rgba(59, 130, 246, 0.3) !important;
+}
+
+/* ============================================
+   IMAGE VIEWER OVERRIDES
+   ============================================ */
+.el-image-viewer__mask {
+  background: rgba(15, 15, 35, 0.9) !important;
+  backdrop-filter: blur(var(--blur-xl));
+  -webkit-backdrop-filter: blur(var(--blur-xl));
+}
+
+/* ============================================
+   SCROLLBAR OVERRIDES
+   ============================================ */
+.el-scrollbar__thumb {
+  background: rgba(139, 92, 246, 0.3) !important;
+}
+
+.el-scrollbar__thumb:hover {
+  background: rgba(139, 92, 246, 0.5) !important;
+}

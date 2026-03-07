@@ -259,17 +259,17 @@ export const useTaskStore = defineStore('task', () => {
     user,
     currentTask,
     taskHistory,
-    
+
     // 计算属性
     apiBaseUrl,
     wsBaseUrl,
-    
+
     // API 方法
     startDatasetTask,
     startSingleSampleTask,
     cancelTask,
     fetchReport,
-    
+
     // 本地方法
     updateTaskStatus,
     addToHistory,

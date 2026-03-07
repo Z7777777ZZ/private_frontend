@@ -3,7 +3,16 @@ import { createRouter, createWebHistory } from 'vue-router'
 const routes = [
   {
     path: '/',
-    redirect: '/tasks/new'
+    redirect: () => {
+      const seen = localStorage.getItem('entry_seen')
+      return seen ? '/tasks/new' : '/entry'
+    }
+  },
+  {
+    path: '/entry',
+    name: 'EntryPortal',
+    component: () => import('../views/EntryPortal.vue'),
+    meta: { layout: 'fullscreen' }
   },
   {
     path: '/tasks/new',

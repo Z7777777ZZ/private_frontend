@@ -2,8 +2,13 @@
   <div class="task-new-page">
     <!-- 页面标题 -->
     <div class="page-header">
-      <h2>{{ t('taskNew.title') }}</h2>
-      <p>{{ t('taskNew.subtitle') }}</p>
+      <div>
+        <h2>{{ t('taskNew.title') }}</h2>
+        <p>{{ t('taskNew.subtitle') }}</p>
+      </div>
+      <el-button @click="showPresetDialog = true" type="info" plain class="preset-btn">
+        {{ t('taskNew.recommendedConfig') }}
+      </el-button>
     </div>
 
     <!-- 配置表单 -->
@@ -65,7 +70,7 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="formData.mode === 'dataset' ? 12 : 24">
             <el-form-item :label="t('taskNew.attackMethod')">
               <el-select v-model="formData.attack_method_name" :placeholder="t('taskNew.selectDataset')">
                 <el-option label="static_file" value="static_file" />
@@ -648,9 +653,9 @@
     </el-card>
 
     <!-- 配置预览对话框 -->
-    <el-dialog 
-      v-model="previewDialogVisible" 
-      :title="t('taskNew.configPreview')" 
+    <el-dialog
+      v-model="previewDialogVisible"
+      :title="t('taskNew.configPreview')"
       width="700px"
     >
       <el-input
@@ -665,22 +670,242 @@
         <el-button type="primary" @click="copyConfig">{{ t('taskNew.copyConfig') }}</el-button>
       </template>
     </el-dialog>
+
+    <!-- Preset Configuration Dialog -->
+    <el-dialog
+      v-model="showPresetDialog"
+      :title="t('taskNew.presetDialogTitle')"
+      width="900px"
+      class="preset-dialog"
+    >
+      <el-tabs v-model="activePresetTab" class="preset-tabs">
+        <!-- Quick Start Presets -->
+        <el-tab-pane :label="t('taskNew.presetQuickStart')" name="quick">
+          <div class="preset-list">
+            <div v-for="preset in quickStartPresets" :key="preset.name" class="preset-item">
+              <div class="preset-header">
+                <h4>{{ preset.name }}</h4>
+                <div class="preset-actions">
+                  <el-button @click="applyPreset(preset)" size="small" type="primary">
+                    {{ t('taskNew.apply') }}
+                  </el-button>
+                  <el-button @click="copyPresetJson(preset)" size="small">
+                    {{ t('taskNew.copyJson') }}
+                  </el-button>
+                </div>
+              </div>
+              <p class="preset-description">{{ preset.description }}</p>
+              <div class="preset-config">
+                <span class="config-label">{{ t('taskNew.presetSoftware') }}:</span>
+                <span class="config-value">{{ preset.config.software }}</span>
+                <span class="config-label">{{ t('taskNew.presetModel') }}:</span>
+                <span class="config-value">{{ preset.config.llm_name }}</span>
+                <span v-if="preset.config.dataset_name" class="config-label">{{ t('taskNew.presetDataset') }}:</span>
+                <span v-if="preset.config.dataset_name" class="config-value">{{ preset.config.dataset_name }}</span>
+              </div>
+            </div>
+          </div>
+        </el-tab-pane>
+
+        <!-- Dataset Benchmarks -->
+        <el-tab-pane :label="t('taskNew.presetDatasets')" name="datasets">
+          <div class="preset-list">
+            <div v-for="preset in datasetPresets" :key="preset.name" class="preset-item">
+              <div class="preset-header">
+                <h4>{{ preset.name }}</h4>
+                <div class="preset-actions">
+                  <el-button @click="applyPreset(preset)" size="small" type="primary">
+                    {{ t('taskNew.apply') }}
+                  </el-button>
+                  <el-button @click="copyPresetJson(preset)" size="small">
+                    {{ t('taskNew.copyJson') }}
+                  </el-button>
+                </div>
+              </div>
+              <p class="preset-description">{{ preset.description }}</p>
+              <div class="preset-config">
+                <span class="config-label">{{ t('taskNew.presetSoftware') }}:</span>
+                <span class="config-value">{{ preset.config.software }}</span>
+                <span class="config-label">{{ t('taskNew.presetModel') }}:</span>
+                <span class="config-value">{{ preset.config.llm_name }}</span>
+                <span class="config-label">{{ t('taskNew.presetDataset') }}:</span>
+                <span class="config-value">{{ preset.config.dataset_name }}</span>
+                <span class="config-label">{{ t('taskNew.presetConcurrency') }}:</span>
+                <span class="config-value">{{ preset.config.concurrency }}</span>
+              </div>
+            </div>
+          </div>
+        </el-tab-pane>
+
+        <!-- Model Comparisons -->
+        <el-tab-pane :label="t('taskNew.presetModelCompare')" name="compare">
+          <div class="preset-list">
+            <div v-for="preset in modelComparePresets" :key="preset.name" class="preset-item">
+              <div class="preset-header">
+                <h4>{{ preset.name }}</h4>
+                <div class="preset-actions">
+                  <el-button @click="applyPreset(preset)" size="small" type="primary">
+                    {{ t('taskNew.apply') }}
+                  </el-button>
+                  <el-button @click="copyPresetJson(preset)" size="small">
+                    {{ t('taskNew.copyJson') }}
+                  </el-button>
+                </div>
+              </div>
+              <p class="preset-description">{{ preset.description }}</p>
+              <p v-if="preset.note" class="preset-note">{{ preset.note }}</p>
+              <div class="preset-config">
+                <span class="config-label">{{ t('taskNew.presetSoftware') }}:</span>
+                <span class="config-value">{{ preset.config.software }}</span>
+                <span class="config-label">{{ t('taskNew.presetDataset') }}:</span>
+                <span class="config-value">{{ preset.config.dataset_name }}</span>
+                <span class="config-label">{{ t('taskNew.presetModels') }}:</span>
+                <span class="config-value">{{ preset.models?.join(', ') }}</span>
+              </div>
+            </div>
+          </div>
+        </el-tab-pane>
+      </el-tabs>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, computed, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
 import { useTaskStore } from '@/stores/task'
 import type { DatasetTaskRequest, SingleSampleRequest } from '@/types'
 
 const router = useRouter()
+const route = useRoute()
 const taskStore = useTaskStore()
 const { t } = useI18n()
 const loading = ref(false)
 const previewDialogVisible = ref(false)
+const showPresetDialog = ref(false)
+const activePresetTab = ref('quick')
+
+// Preset Configuration Interface
+interface ConfigPreset {
+  name: string
+  description: string
+  note?: string
+  config: {
+    mode?: string
+    software: string
+    llm_name?: string
+    dataset_name?: string
+    attack_method_name?: string
+    concurrency?: number
+    filter_dict?: any
+    sample?: any
+  }
+  models?: string[]
+}
+
+// Quick Start Presets
+const quickStartPresets: ConfigPreset[] = [
+  {
+    name: t('taskNew.presetSingleSample'),
+    description: t('taskNew.presetSingleSampleDesc'),
+    config: {
+      mode: 'single_sample',
+      software: 'cline_ide',
+      llm_name: 'gemini-3-flash',
+      attack_method_name: 'static_file',
+      concurrency: 1,
+      sample: {
+        id: 'test-001',
+        category: 'Data_Leakage',
+        subcategory: 'Credential_Leakage'
+      }
+    }
+  },
+  {
+    name: t('taskNew.presetMiniDataset'),
+    description: t('taskNew.presetMiniDatasetDesc'),
+    config: {
+      mode: 'dataset',
+      software: 'cline_ide',
+      llm_name: 'gemini-3-flash',
+      dataset_name: 'ipi_web_dataset_lite',
+      attack_method_name: 'static_file',
+      concurrency: 1,
+      filter_dict: { id: ['ipi_dl_cl_001'] }
+    }
+  }
+]
+
+// Dataset Benchmark Presets
+const datasetPresets: ConfigPreset[] = [
+  {
+    name: 'RedCode Full',
+    description: t('taskNew.presetRedCodeDesc'),
+    config: {
+      mode: 'dataset',
+      software: 'cc_cli',
+      llm_name: 'claude-sonnet-4-5',
+      dataset_name: 'redcode',
+      attack_method_name: 'multi_file',
+      concurrency: 4
+    }
+  },
+  {
+    name: 'CVE Benchmark',
+    description: t('taskNew.presetCVEDesc'),
+    config: {
+      mode: 'dataset',
+      software: 'cc_cli',
+      llm_name: 'claude-sonnet-4-5',
+      dataset_name: 'cvebench',
+      attack_method_name: 'static_file',
+      concurrency: 2
+    }
+  },
+  {
+    name: 'SWE-Bench Lite',
+    description: t('taskNew.presetSWEBenchDesc'),
+    config: {
+      mode: 'dataset',
+      software: 'cline_cli',
+      llm_name: 'gpt-4o-mini',
+      dataset_name: 'swebench',
+      attack_method_name: 'static_file',
+      concurrency: 1
+    }
+  }
+]
+
+// Model Comparison Presets
+const modelComparePresets: ConfigPreset[] = [
+  {
+    name: 'Claude vs GPT-4',
+    description: t('taskNew.presetClaudeGPTDesc'),
+    note: t('taskNew.presetRunTwiceNote'),
+    config: {
+      mode: 'dataset',
+      software: 'cline_ide',
+      dataset_name: 'ipi_web_dataset_lite',
+      attack_method_name: 'static_file',
+      filter_dict: { id: ['ipi_dl_cl_001'] },
+      concurrency: 1
+    },
+    models: ['claude-sonnet-4-5', 'gpt-4o-mini']
+  },
+  {
+    name: 'All Models Comparison',
+    description: t('taskNew.presetAllModelsDesc'),
+    config: {
+      mode: 'single_sample',
+      software: 'cline_ide',
+      dataset_name: 'ipi_web_dataset_lite',
+      sample: { id: 'test-001' }
+    },
+    models: ['deepseek-chat', 'gemini-3-flash', 'claude-sonnet-4-5', 'gpt-4o-mini']
+  }
+]
 
 const formData = ref({
   mode: 'dataset',
@@ -727,6 +952,14 @@ const filterDictStr = ref('{"id": ["ipi_dl_cl_001"]}')
 const mcpConfigStr = ref('')
 const ideSettingsStr = ref('')
 const metadataStr = ref('{}')
+
+// 从入口页 query 中自动预选评测模式
+onMounted(() => {
+  const queryMode = route.query.mode as string | undefined
+  if (queryMode === 'single_sample' || queryMode === 'dataset') {
+    formData.value.mode = queryMode
+  }
+})
 
 const categoryOptions = [
   'Data_Leakage',
@@ -1391,6 +1624,61 @@ const copyConfig = () => {
   navigator.clipboard.writeText(previewConfig.value)
   ElMessage.success(t('taskNew.messages.configCopied'))
 }
+
+/**
+ * Apply a preset configuration to the form
+ */
+const applyPreset = (preset: ConfigPreset) => {
+  const config = preset.config
+
+  // Apply mode
+  if (config.mode) {
+    formData.value.mode = config.mode as 'dataset' | 'single_sample'
+  }
+
+  // Apply basic settings
+  formData.value.software = config.software
+  if (config.llm_name) {
+    formData.value.llm_name = config.llm_name
+  }
+  if (config.dataset_name) {
+    formData.value.dataset_name = config.dataset_name
+  }
+  formData.value.attack_method_name = config.attack_method_name || 'static_file'
+  if (config.concurrency) {
+    formData.value.concurrency = config.concurrency
+  }
+
+  // Apply dataset mode specific settings
+  if (config.mode === 'dataset' && config.filter_dict) {
+    filterDictStr.value = JSON.stringify(config.filter_dict, null, 2)
+  }
+
+  // Apply single sample mode specific settings
+  if (config.mode === 'single_sample' && config.sample) {
+    if (config.sample.id) {
+      formData.value.sample.id = config.sample.id
+    }
+    if (config.sample.category) {
+      formData.value.sample.category = config.sample.category
+    }
+    if (config.sample.subcategory) {
+      formData.value.sample.subcategory = config.sample.subcategory
+    }
+  }
+
+  showPresetDialog.value = false
+  ElMessage.success(t('taskNew.messages.presetApplied'))
+}
+
+/**
+ * Copy preset JSON to clipboard
+ */
+const copyPresetJson = (preset: ConfigPreset) => {
+  const json = JSON.stringify(preset.config, null, 2)
+  navigator.clipboard.writeText(json)
+  ElMessage.success(t('taskNew.messages.presetJsonCopied'))
+}
 </script>
 
 <style scoped>
@@ -1398,75 +1686,102 @@ const copyConfig = () => {
   height: 100%;
 }
 
+/* ============================================
+   PAGE HEADER
+   ============================================ */
 .page-header {
-  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--space-lg);
 }
 
 .page-header h2 {
   margin: 0 0 6px 0;
-  font-size: 20px;
-  font-weight: 500;
-  color: #303133;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
 .page-header p {
   margin: 0;
-  color: #909399;
-  font-size: 13px;
+  color: var(--text-tertiary);
+  font-size: 14px;
 }
 
+/* ============================================
+   FORM CARD
+   ============================================ */
 .form-card {
-  background: #fff;
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--blur-md));
+  -webkit-backdrop-filter: blur(var(--blur-md));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
 }
 
 :deep(.el-card__body) {
-  padding: 28px 32px;
+  padding: var(--space-xl);
 }
 
+/* ============================================
+   FORM ITEMS
+   ============================================ */
 :deep(.el-form-item) {
-  margin-bottom: 20px;
+  margin-bottom: var(--space-lg);
 }
 
 :deep(.el-form-item__label) {
   font-size: 13px;
-  color: #606266;
+  color: var(--text-secondary);
   font-weight: 500;
-}
-
-:deep(.el-input__inner),
-:deep(.el-select),
-:deep(.el-textarea__inner) {
-  font-size: 13px;
 }
 
 :deep(.el-divider) {
-  margin: 24px 0;
+  margin: var(--space-lg) 0;
+  border-color: var(--glass-border);
 }
 
 :deep(.el-divider__text) {
-  font-size: 14px;
-  font-weight: 500;
-  color: #303133;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: transparent;
+  padding: 0 var(--space-md);
 }
 
+:deep(.el-divider__text::before),
+:deep(.el-divider__text::after) {
+  border-color: var(--glass-border);
+}
+
+/* ============================================
+   FORM TIPS
+   ============================================ */
 .form-tip {
-  color: #909399;
+  color: var(--text-muted);
   font-size: 12px;
   line-height: 1.5;
-  margin-left: 8px;
+  margin-left: var(--space-sm);
+  display: inline-block;
 }
 
+/* ============================================
+   FILE ATTACK ITEM
+   ============================================ */
 .file-attack-item {
-  margin-bottom: 16px;
+  margin-bottom: var(--space-md);
 }
 
-.file-attack-item .el-card {
-  border: 1px solid #dcdfe6;
-  background: #fafafa;
+.file-attack-item :deep(.el-card) {
+  border: 1px solid var(--glass-border);
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(var(--blur-sm));
+  -webkit-backdrop-filter: blur(var(--blur-sm));
 }
 
-:deep(.file-attack-item .el-card__body) {
-  padding: 16px;
+.file-attack-item :deep(.el-card__body) {
+  padding: var(--space-md);
 }
 
 .attack-header {
@@ -1478,21 +1793,234 @@ const copyConfig = () => {
 .attack-title {
   font-weight: 500;
   font-size: 13px;
-  color: #303133;
+  color: var(--text-primary);
 }
 
+/* ============================================
+   BUTTONS
+   ============================================ */
 :deep(.el-button--large) {
-  padding: 10px 28px;
+  padding: 12px var(--space-xl);
   font-size: 14px;
+  font-weight: 500;
 }
 
+:deep(.el-button--primary) {
+  background: var(--gradient-primary);
+  border: none;
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4);
+}
+
+:deep(.el-button--primary:hover) {
+  box-shadow: 0 6px 30px rgba(139, 92, 246, 0.5);
+  transform: translateY(-2px);
+}
+
+/* ============================================
+   PREVIEW JSON
+   ============================================ */
 .preview-json {
   font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
   font-size: 12px;
 }
 
 :deep(.preview-json .el-textarea__inner) {
-  background-color: #f5f7fa;
+  background-color: rgba(0, 0, 0, 0.3);
+  color: var(--text-code-dim);
   font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+/* ============================================
+   SECTION DIVIDERS WITH GRADIENT
+   ============================================ */
+:deep(.el-divider) {
+  position: relative;
+  overflow: visible;
+}
+
+:deep(.el-divider::after) {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--gradient-horizontal);
+  opacity: 0.1;
+  pointer-events: none;
+}
+
+/* ============================================
+   RADIO GROUPS
+   ============================================ */
+:deep(.el-radio-group) {
+  display: flex;
+  gap: var(--space-md);
+}
+
+:deep(.el-radio) {
+  margin-right: 0;
+}
+
+:deep(.el-radio.is-bordered) {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: var(--glass-border);
+}
+
+:deep(.el-radio.is-bordered.is-checked) {
+  background: rgba(139, 92, 246, 0.15);
+  border-color: var(--color-accent-purple);
+}
+
+/* ============================================
+   SWITCHES
+   ============================================ */
+:deep(.el-switch.is-checked .el-switch__core) {
+  background: var(--gradient-primary);
+}
+
+/* ============================================
+   INPUT NUMBER
+   ============================================ */
+:deep(.el-input-number .el-input__wrapper) {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--glass-border);
+}
+
+:deep(.el-input-number .el-input__wrapper:hover) {
+  border-color: rgba(139, 92, 246, 0.3);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  :deep(.el-card__body) {
+    padding: var(--space-md);
+  }
+
+  :deep(.el-col) {
+    width: 100% !important;
+    margin-bottom: var(--space-sm);
+  }
+}
+
+/* ============================================
+   PRESET DIALOG STYLES
+   ============================================ */
+.preset-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid var(--color-accent-purple);
+  color: var(--color-accent-purple);
+}
+
+.preset-btn:hover {
+  background: rgba(139, 92, 246, 0.2);
+  border-color: var(--color-accent-purple-light);
+}
+
+:deep(.preset-dialog) {
+  background: var(--glass-bg-heavy);
+  backdrop-filter: blur(var(--blur-xl));
+  border: 1px solid var(--glass-border);
+}
+
+:deep(.preset-dialog .el-dialog__header) {
+  border-bottom: 1px solid var(--glass-border);
+}
+
+:deep(.preset-dialog .el-dialog__title) {
+  color: var(--text-primary);
+}
+
+.preset-tabs :deep(.el-tabs__nav-wrap::after) {
+  display: none;
+}
+
+.preset-tabs :deep(.el-tabs__item) {
+  color: var(--text-tertiary);
+}
+
+.preset-tabs :deep(.el-tabs__item.is-active) {
+  color: var(--color-accent-purple);
+}
+
+.preset-tabs :deep(.el-tabs__active-bar) {
+  background: var(--gradient-primary);
+}
+
+.preset-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  max-height: 400px;
+  overflow-y: auto;
+  padding: var(--space-sm);
+}
+
+.preset-item {
+  padding: var(--space-md);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  transition: all var(--duration-normal) var(--ease-out-cubic);
+}
+
+.preset-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(139, 92, 246, 0.3);
+}
+
+.preset-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-sm);
+}
+
+.preset-header h4 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.preset-actions {
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.preset-description {
+  margin: 0 0 var(--space-sm) 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.preset-note {
+  margin: 0 0 var(--space-sm) 0;
+  font-size: 12px;
+  color: var(--color-accent-orange);
+  font-style: italic;
+}
+
+.preset-config {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  font-size: 12px;
+}
+
+.config-label {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.config-value {
+  color: var(--text-secondary);
+  font-family: 'Consolas', 'Monaco', monospace;
+  padding: 2px 6px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
 }
 </style>

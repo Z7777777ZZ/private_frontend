@@ -8,6 +8,14 @@ import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import App from './App.vue'
 import router from './router'
 import i18n from './i18n'
+// Import CSS modules in order (variables first, then specialized styles, global last)
+import './styles/variables.css'
+import './styles/glassmorphism.css'
+import './styles/background.css'
+import './styles/animations.css'
+import './styles/chat-log.css'
+import './styles/interactions.css'
+import './styles/element-plus-override.css'
 import './styles/global.css'
 
 const app = createApp(App)
