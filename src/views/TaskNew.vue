@@ -1004,6 +1004,19 @@ const parseJsonSafe = (text: string, fallback: any) => {
   }
 }
 
+/**
+ * 处理字符串中的转义序列，将字面的 \n \t \r 等转换为实际的特殊字符
+ * 用户在 textarea 中输入 \n 时，需要将其转换为真正的换行符，与 JSON 文件中的处理方式一致
+ */
+const unescapeString = (str: string): string => {
+  if (!str) return str
+  return str
+    .replace(/\\n/g, '\n')   // 换行符
+    .replace(/\\t/g, '\t')   // 制表符
+    .replace(/\\r/g, '\r')   // 回车符
+    .replace(/\\\\/g, '\\')  // 反斜杠（必须放在最后）
+}
+
 const previewConfig = computed(() => {
   const config: any = {
     agent: {
@@ -1387,7 +1400,12 @@ const buildSingleSamplePayload = (): SingleSampleRequest => {
     sample.script_to_fetch_from_attacker_server = formData.value.sample.script_to_fetch_from_attacker_server
   }
   if (formData.value.sample.prompt_injections && formData.value.sample.prompt_injections.length > 0) {
-    sample.prompt_injections = formData.value.sample.prompt_injections
+    // 处理转义序列，将字面的 \n 等转换为真正的特殊字符
+    sample.prompt_injections = formData.value.sample.prompt_injections.map(injection => ({
+      ...injection,
+      match_pattern: unescapeString(injection.match_pattern),
+      payload_content: unescapeString(injection.payload_content)
+    }))
   }
   
   // Build evaluation config from form data

@@ -60,6 +60,17 @@
           </template>
         </el-table-column>
         
+        <el-table-column prop="result.attack_success" :label="t('taskHistory.attackResult')" width="120">
+          <template #default="{ row }">
+            <span v-if="row.result?.attack_success" 
+                  class="status-text" 
+                  :class="(row.result.attack_success === 'success' || row.result.attack_success === true) ? 'error' : 'finished'">
+              {{ (row.result.attack_success === 'success' || row.result.attack_success === true) ? t('taskHistory.attackSuccess') : t('taskHistory.attackFailed') }}
+            </span>
+            <span v-else class="text-muted">-</span>
+          </template>
+        </el-table-column>
+        
         <el-table-column :label="t('taskHistory.actions')" width="260" fixed="right">
           <template #default="{ row }">
             <div class="action-buttons">
@@ -170,35 +181,37 @@
           style="margin-bottom: 16px;"
         />
         
-        <el-tabs v-if="fullReport" type="border-card">
+        <el-tabs v-if="evaluationResult" type="border-card">
           <el-tab-pane :label="t('taskHistory.basicInfo')">
             <el-descriptions :column="2" border>
-              <el-descriptions-item :label="t('taskHistory.sampleId')">{{ fullReport.sample_id }}</el-descriptions-item>
-              <el-descriptions-item :label="t('taskHistory.status')">
-                <span class="status-text" :class="getStatusClass(fullReport.status || 'unknown')">
-                  {{ fullReport.status }}
+              <el-descriptions-item :label="t('taskHistory.sampleId')">{{ evaluationResult.sample_id }}</el-descriptions-item>
+              <el-descriptions-item :label="t('taskHistory.timestamp')">
+                {{ evaluationResult.time_stamp }}
+              </el-descriptions-item>
+              <el-descriptions-item :label="t('taskHistory.taskResult')">
+                <span class="status-text" :class="evaluationResult.task_success === 'success' ? 'finished' : 'error'">
+                  {{ evaluationResult.task_success === 'success' ? t('taskHistory.taskSuccess') : t('taskHistory.taskFailed') }}
                 </span>
               </el-descriptions-item>
-              <el-descriptions-item :label="t('taskHistory.attackResult')" :span="2">
-                <span class="status-text" :class="(fullReport.result?.attack_success === 'success' || fullReport.result?.attack_success === true) ? 'error' : 'finished'">
-                  {{ (fullReport.result?.attack_success === 'success' || fullReport.result?.attack_success === true) ? t('taskHistory.attackSuccess') : t('taskHistory.attackFailed') }}
+              <el-descriptions-item :label="t('taskHistory.attackResult')">
+                <span class="status-text" :class="getAttackSuccessClass()">
+                  {{ getAttackSuccessText() }}
                 </span>
               </el-descriptions-item>
-              <el-descriptions-item :label="t('taskHistory.startTime')" v-if="fullReport.stats">
-                {{ new Date(fullReport.stats.started_at * 1000).toLocaleString() }}
+              <el-descriptions-item :label="t('taskHistory.alertResult')" v-if="evaluationResult.alert_success">
+                <span class="status-text" :class="evaluationResult.alert_success === 'success' ? 'finished' : 'error'">
+                  {{ evaluationResult.alert_success === 'success' ? t('taskHistory.alertSuccess') : t('taskHistory.alertFailed') }}
+                </span>
               </el-descriptions-item>
-              <el-descriptions-item :label="t('taskHistory.completeTime')" v-if="fullReport.stats">
-                {{ new Date(fullReport.stats.completed_at * 1000).toLocaleString() }}
-              </el-descriptions-item>
-              <el-descriptions-item :label="t('taskHistory.duration')" v-if="fullReport.stats">
-                {{ Math.round(fullReport.stats.duration) }} {{ t('taskHistory.seconds') }}
+              <el-descriptions-item :label="t('taskHistory.historyLength')">
+                {{ evaluationResult.history_length }}
               </el-descriptions-item>
             </el-descriptions>
           </el-tab-pane>
 
-          <el-tab-pane :label="t('taskHistory.scoreDetails')" v-if="fullReport.result?.scores">
+          <el-tab-pane :label="t('taskHistory.scoreDetails')" v-if="evaluationResult.scores">
             <el-descriptions :column="1" border>
-              <el-descriptions-item v-for="(scoreList, dataset) in fullReport.result.scores" :key="dataset" :label="String(dataset)" :span="2">
+              <el-descriptions-item v-for="(scoreList, dataset) in evaluationResult.scores" :key="dataset" :label="String(dataset)" :span="2">
                 <div v-if="Array.isArray(scoreList)">
                   <div v-for="(score, idx) in scoreList" :key="idx" style="margin-bottom: 12px;">
                     <strong>{{ score.name }}:</strong> {{ score.value }}
@@ -212,9 +225,9 @@
             </el-descriptions>
           </el-tab-pane>
 
-          <el-tab-pane :label="t('taskHistory.conversationHistory')" v-if="fullReport.result?.trace">
+          <el-tab-pane :label="t('taskHistory.conversationHistory')" v-if="evaluationResult.trace">
             <div class="trace-container">
-              <div v-for="(msg, idx) in fullReport.result.trace" :key="idx" class="trace-message">
+              <div v-for="(msg, idx) in evaluationResult.trace" :key="idx" class="trace-message">
                 <div class="trace-header">
                   <span class="role-badge" :class="msg.role === 'user' ? 'role-user' : 'role-ai'">
                     {{ msg.role === 'user' ? t('taskHistory.user') : t('taskHistory.ai') }}
@@ -226,25 +239,27 @@
             </div>
           </el-tab-pane>
 
-          <el-tab-pane :label="t('taskHistory.executedCommands')" v-if="fullReport.result?.commands_executed">
+          <el-tab-pane :label="t('taskHistory.executedCommands')" v-if="evaluationResult.commands_executed">
             <div class="commands-container">
-              <div v-for="(cmd, idx) in fullReport.result.commands_executed" :key="idx" class="command-item">
+              <div v-for="(cmd, idx) in evaluationResult.commands_executed" :key="idx" class="command-item">
                 <div class="command-index">#{{ idx + 1 }}</div>
                 <pre class="command-content">{{ cmd }}</pre>
               </div>
             </div>
           </el-tab-pane>
 
-          <el-tab-pane :label="t('taskHistory.sampleInfo')" v-if="fullReport.sample">
+          <el-tab-pane :label="t('taskHistory.sampleInfo')" v-if="evaluationResult.sample">
             <el-descriptions :column="1" border>
-              <el-descriptions-item label="ID">{{ fullReport.sample.id }}</el-descriptions-item>
+              <el-descriptions-item label="ID">{{ evaluationResult.sample.id }}</el-descriptions-item>
+              <el-descriptions-item label="Category">{{ evaluationResult.sample.category }}</el-descriptions-item>
+              <el-descriptions-item label="Subcategory">{{ evaluationResult.sample.subcategory }}</el-descriptions-item>
               <el-descriptions-item :label="t('taskHistory.input')">
-                <pre style="white-space: pre-wrap;">{{ fullReport.sample.user_instruction || fullReport.sample.input }}</pre>
+                <pre style="white-space: pre-wrap;">{{ evaluationResult.sample.user_instruction }}</pre>
               </el-descriptions-item>
-              <el-descriptions-item :label="t('taskHistory.metadata')" v-if="fullReport.sample.metadata">
+              <el-descriptions-item :label="t('taskHistory.metadata')" v-if="evaluationResult.sample.metadata">
                 <el-input 
                   type="textarea" 
-                  :value="JSON.stringify(fullReport.sample.metadata, null, 2)" 
+                  :value="JSON.stringify(evaluationResult.sample.metadata, null, 2)" 
                   :rows="10" 
                   readonly
                 />
@@ -253,9 +268,18 @@
           </el-tab-pane>
 
           <el-tab-pane :label="t('taskHistory.fullJson')">
+            <div style="margin-bottom: 16px;">
+              <el-alert type="info" :closable="false">
+                <template #title>
+                  <strong>EvaluationResult 字段总数:</strong> {{ evaluationResult ? Object.keys(evaluationResult).length : 0 }} 个
+                  <el-divider direction="vertical" />
+                  <strong>所有字段:</strong> {{ evaluationResult ? Object.keys(evaluationResult).join(', ') : '' }}
+                </template>
+              </el-alert>
+            </div>
             <el-input 
               type="textarea" 
-              :value="JSON.stringify(fullReport, null, 2)" 
+              :value="JSON.stringify(evaluationResult, null, 2)" 
               :rows="20" 
               readonly
               class="json-viewer"
@@ -266,7 +290,7 @@
       
       <template #footer>
         <el-button @click="reportDialogVisible = false" size="large">{{ t('taskHistory.close') }}</el-button>
-        <el-button type="primary" @click="downloadReport" size="large" :disabled="!fullReport">
+        <el-button type="primary" @click="downloadReport" size="large" :disabled="!evaluationResult">
           {{ t('taskHistory.downloadReport') }}
         </el-button>
       </template>
@@ -293,7 +317,8 @@ const selectedTask = ref<any>(null)
 const reportDialogVisible = ref(false)
 const reportLoading = ref(false)
 const reportError = ref('')
-const fullReport = ref<any>(null)
+const evaluationResult = ref<any>(null)  // 主要数据：EvaluationResult
+const reportData = ref<any>(null)  // 辅助数据：report API返回的数据
 
 // 使用 Store 中的真实历史数据
 const totalTasks = computed(() => taskStore.taskHistory.length)
@@ -328,6 +353,28 @@ const getStatusText = (status: string) => {
   return t(`taskHistory.statusMap.${status}` as any) || t('taskHistory.statusMap.unknown')
 }
 
+/**
+ * 获取攻击成功状态的样式类
+ */
+const getAttackSuccessClass = () => {
+  if (evaluationResult.value?.attack_success !== undefined) {
+    return evaluationResult.value.attack_success === 'success' ? 'error' : 'finished'
+  }
+  return 'unknown'
+}
+
+/**
+ * 获取攻击成功状态的文本
+ */
+const getAttackSuccessText = () => {
+  if (evaluationResult.value?.attack_success !== undefined) {
+    return evaluationResult.value.attack_success === 'success' 
+      ? t('taskHistory.attackSuccess') 
+      : t('taskHistory.attackFailed')
+  }
+  return '-'
+}
+
 const handleNewTask = () => {
   router.push('/tasks/new')
 }
@@ -345,13 +392,32 @@ const handleViewReport = async (task: any) => {
   reportDialogVisible.value = true
   reportLoading.value = true
   reportError.value = ''
-  fullReport.value = null
+  evaluationResult.value = null
+  reportData.value = null
   
   try {
-    const report = await taskStore.fetchReport(task.taskId)
-    fullReport.value = report
+    // 优先使用task中存储的result（这就是EvaluationResult）
+    if (task.result) {
+      evaluationResult.value = task.result
+      console.log('[TaskHistory] 从TaskInfo中提取的EvaluationResult:', evaluationResult.value)
+    }
+    
+    // 如果需要，也可以获取report（用于其他目的）
+    try {
+      const report = await taskStore.fetchReport(task.taskId)
+      reportData.value = report
+      console.log('[TaskHistory] 后端返回的report数据:', report)
+    } catch (reportError) {
+      console.warn('[TaskHistory] 获取report失败，但不影响显示EvaluationResult:', reportError)
+    }
+    
+    // 如果本地没有result，尝试从report中获取（备用方案）
+    if (!evaluationResult.value && reportData.value) {
+      evaluationResult.value = reportData.value
+      console.log('[TaskHistory] 使用report作为EvaluationResult')
+    }
   } catch (error: any) {
-    console.error('[TaskHistory] 获取报告失败:', error)
+    console.error('[TaskHistory] 加载数据失败:', error)
     reportError.value = error.message || t('taskHistory.messages.reportFetchFailed')
     ElMessage.error(reportError.value)
   } finally {
@@ -360,14 +426,14 @@ const handleViewReport = async (task: any) => {
 }
 
 const downloadReport = () => {
-  if (!fullReport.value) return
+  if (!evaluationResult.value) return
   
-  const dataStr = JSON.stringify(fullReport.value, null, 2)
+  const dataStr = JSON.stringify(evaluationResult.value, null, 2)
   const dataBlob = new Blob([dataStr], { type: 'application/json' })
   const url = URL.createObjectURL(dataBlob)
   const link = document.createElement('a')
   link.href = url
-  link.download = `report_${fullReport.value.sample_id || 'unknown'}_${Date.now()}.json`
+  link.download = `evaluation_result_${evaluationResult.value.sample_id || 'unknown'}_${Date.now()}.json`
   link.click()
   URL.revokeObjectURL(url)
   ElMessage.success(t('taskHistory.messages.reportDownloaded'))
@@ -392,12 +458,13 @@ const handleRetry = async (task: any) => {
     try {
       let result
       // 根据配置判断是数据集任务还是单样本任务
-      if (task.config.dataset_name) {
+      // 优先检查 sample 字段，因为单样本任务必须有 sample
+      if (task.config.sample) {
+        // 单样本任务
+        result = await taskStore.startSingleSampleTask(task.config)
+      } else if (task.config.dataset_name) {
         // 数据集任务
         result = await taskStore.startDatasetTask(task.config)
-      } else if (task.config.sample) {
-        // 单样本任务（ExperimentConfig 结构）
-        result = await taskStore.startSingleSampleTask(task.config)
       } else {
         ElMessage.error(t('taskHistory.messages.unknownTaskType'))
         return

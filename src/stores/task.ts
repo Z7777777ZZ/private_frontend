@@ -161,10 +161,13 @@ export const useTaskStore = defineStore('task', () => {
   /**
    * 更新任务状态
    */
-  const updateTaskStatus = (taskId: string, status: TaskStatus) => {
+  const updateTaskStatus = (taskId: string, status: TaskStatus, result?: any) => {
     // 更新当前任务
     if (currentTask.value?.taskId === taskId) {
       currentTask.value.status = status
+      if (result) {
+        currentTask.value.result = result
+      }
       if (status === 'finished' || status === 'error' || status === 'cancelled') {
         currentTask.value.endTime = new Date().toLocaleString()
       }
@@ -174,6 +177,9 @@ export const useTaskStore = defineStore('task', () => {
     const historyTask = taskHistory.value.find(t => t.taskId === taskId)
     if (historyTask) {
       historyTask.status = status
+      if (result) {
+        historyTask.result = result
+      }
       if (status === 'finished' || status === 'error' || status === 'cancelled') {
         historyTask.endTime = new Date().toLocaleString()
       }

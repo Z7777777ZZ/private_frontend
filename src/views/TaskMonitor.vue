@@ -439,6 +439,10 @@ const connectWebSocket = () => {
   wsManager.on('result', (result: any) => {
     console.log('[TaskMonitor] 收到结果:', result)
     results.value.push(result)
+    
+    // 将result存储到TaskInfo中
+    taskStore.updateTaskStatus(taskId.value, status.value, result)
+    
     addLog(`${t('taskMonitor.logMessages.receivedResult')}: ${result.task_id || 'task'}`)
   })
 

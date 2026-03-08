@@ -157,7 +157,7 @@ export interface ScoreResult {
 }
 
 /**
- * 任务结果
+ * 任务结果（WebSocket消息中使用，简化版）
  */
 export interface TaskResult {
   task_id: string
@@ -168,6 +168,29 @@ export interface TaskResult {
   run_success?: 'success' | 'failure'
   scores?: Record<string, any>
   timestamp?: number
+}
+
+/**
+ * 评估结果（WebSocket的result就是这个类型）
+ */
+export interface EvaluationResult {
+  sample_id: string
+  sample: Sample
+  time_stamp: string
+  task_success: 'success' | 'failure'
+  attack_success: 'success' | 'failure'
+  alert_success: 'success' | 'failure'
+  scores: Record<string, number | ScoreResult[]>
+  prompt_injections: PromptInjection[]
+  explanation: string[][]
+  metadata: Record<string, any>
+  trace: Array<Record<string, any>>
+  web_server_log: Record<string, any>
+  raw_chat_history?: string | null
+  commands_executed: string[]
+  history_length: number
+  feedback?: Record<string, any> | null
+  exp_config: ExperimentConfig
 }
 
 /**
@@ -194,4 +217,5 @@ export interface TaskInfo {
   startTime: string
   endTime?: string
   status: TaskStatus
+  result?: EvaluationResult  // WebSocket接收到的完整评估结果
 }
